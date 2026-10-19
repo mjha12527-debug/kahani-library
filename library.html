@@ -2,19 +2,25 @@
 <html lang="hi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>मेरा कहानी पुस्तकालय</title>
 
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <script>if(window.top!==window.self){window.top.location=window.self.location}</script>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#7a3b12">
 
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;max-width:100%;overflow-x:hidden}
 body{background:#f5f0e8;font-family:sans-serif;color:#222;padding-top:56px}
+body.hasap{padding-bottom:160px}
+body.dk{background:#121212}
+body.dk .sub{color:#aaa}
+body.dk .rights{color:#777}
 .top{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:60}
 .nav{background:#7a3b12;color:#fff;text-decoration:none;padding:8px 14px;border-radius:10px;font-size:15px;font-weight:bold;border:0;cursor:pointer;margin:0}
 #prog{position:fixed;top:56px;left:0;height:4px;background:#ef6c00;width:0;z-index:61;transition:width .3s}
@@ -28,7 +34,7 @@ input,select,textarea{width:100%;padding:13px;border:1px solid #888;border-radiu
 textarea{line-height:1.6}
 button{padding:10px 14px;margin:3px;font-size:15px;border:0;border-radius:10px;background:#7a3b12;color:#fff;cursor:pointer}
 button:active{transform:scale(.95)}
-button.g{background:#666}button.r{background:#b3261e}button.ok{background:#2e7d32}
+button.g{background:#666}button.r{background:#b3261e}button.ok{background:#2e7d32}button.bl{background:#1565c0}
 
 .panel{background:#fff;border-radius:18px;padding:10px 6px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .lbl{font-size:12px;color:#888;font-weight:bold;margin:2px 10px}
@@ -51,9 +57,11 @@ body:not(.owner) #tools .it:nth-child(6){display:none}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
 
 .c{position:relative;background:#fffdf7;border-radius:4px 14px 14px 4px;border-left:12px solid #7a3b12;padding:14px 46px 14px 14px;margin:12px 0;box-shadow:2px 3px 8px rgba(0,0,0,.15);animation:rise .4s both;cursor:pointer}
+.c.cont{border-left-color:#ef6c00;background:#fff3e0}
 @keyframes rise{from{transform:translateY(16px);opacity:0}}
 .c h3{margin:0 0 6px;font-size:18px}.c p{margin:0;color:#555;font-size:14px}
 .c .hr{position:absolute;right:8px;top:8px;font-size:22px;background:none;padding:2px;margin:0}
+.mini{display:block;margin-top:6px;color:#2e7d32;font-weight:bold;font-size:13px}
 body.del .c{animation:shake .5s infinite}
 @keyframes shake{25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
 .empty{text-align:center;color:#777;padding:30px 10px;font-size:17px}
@@ -66,22 +74,15 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 .cover .logo{width:90px;height:90px;cursor:default}
 #t{line-height:1.9;white-space:pre-wrap;font-size:20px;word-wrap:break-word;-webkit-touch-callout:none}
 #read.night .book{background-color:#1b1b1f;background-image:none;color:#ddd;border-left-color:#555}
+#read.white .book{background-color:#fff;background-image:none}
+#pgs{padding:0;border:0;background:none;accent-color:#7a3b12;height:28px;margin:4px 0}
 .ctr{text-align:center}
 .rights{text-align:center;color:#888;font-size:12px;margin:26px 0 8px}
-
-#md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;align-items:center;justify-content:center;padding:16px}
-#md.on{display:flex}
-#md .bx{background:#fff;border-radius:18px;padding:16px;width:100%;max-width:500px}
-#toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:99;max-width:90%;text-align:center}
-.cf{position:fixed;top:-30px;font-size:26px;z-index:100;pointer-events:none;animation:fall 1.8s linear forwards}
-@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.4}}
-
-@media print{body{display:none!important}}
 
 /* ⋮ मेन्यू */
 #mnuBg{display:none;position:fixed;inset:0;z-index:69}
 #mnuBg.on{display:block}
-#mnu{display:none;position:fixed;top:60px;right:8px;width:270px;max-width:92vw;max-height:80vh;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.3);z-index:70;padding:8px;animation:pop .2s}
+#mnu{display:none;position:fixed;top:60px;right:8px;width:280px;max-width:92vw;max-height:80vh;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.3);z-index:70;padding:8px;animation:pop .2s}
 #mnu.on{display:block}
 #mnu .mh{font-weight:bold;color:#7a3b12;padding:8px 12px;font-size:16px}
 #mnu button{display:block;width:100%;text-align:left;background:none;color:#222;margin:0;padding:12px;border-radius:10px;font-size:15px}
@@ -92,6 +93,27 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 #mnu hr{border:0;border-top:1px solid #eee;margin:6px 0}
 #mnu .mi{font-size:12px;color:#888;text-align:center;padding:8px}
 body:not(.owner) #mnu .own{display:none}
+
+/* 🎧 ऑडियो प्लेयर */
+#ap{display:none;position:fixed;left:0;right:0;bottom:0;background:#3d1c08;color:#f6d98a;padding:8px 12px calc(8px + env(safe-area-inset-bottom));z-index:65;box-shadow:0 -3px 12px rgba(0,0,0,.35);border-radius:16px 16px 0 0}
+#ap.on{display:block}
+#ap .ar{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:13px}
+#ap .ar b{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px}
+#ap .bt{display:flex;justify-content:center;flex-wrap:wrap}
+#ap button{background:#7a3b12;padding:8px 11px;margin:2px;font-size:14px}
+#ap input{padding:0;border:0;margin:6px 0;background:none;accent-color:#ef6c00;height:24px}
+
+#up{display:none;position:fixed;right:14px;bottom:20px;width:46px;height:46px;border-radius:50%;padding:0;font-size:20px;z-index:55;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+body.hasap #up{bottom:180px}
+
+#md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;align-items:center;justify-content:center;padding:16px}
+#md.on{display:flex}
+#md .bx{background:#fff;border-radius:18px;padding:16px;width:100%;max-width:500px}
+#toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:99;max-width:90%;text-align:center}
+.cf{position:fixed;top:-30px;font-size:26px;z-index:100;pointer-events:none;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.4}}
+
+@media print{body{display:none!important}}
 </style>
 </head>
 <body>
@@ -106,8 +128,9 @@ body:not(.owner) #mnu .own{display:none}
   <button onclick="closeMenu();shareIt()">📤 शेयर करें</button>
   <button onclick="closeMenu();installApp()">📲 ऐप इंस्टॉल करें</button>
   <div class="mr">🔠 अक्षर <button onclick="sz(-2)">A−</button><button onclick="sz(2)">A+</button></div>
-  <div class="mr">🔊 आवाज़ <button onclick="setRate(0.8)">धीमी</button><button onclick="setRate(1)">सामान्य</button><button onclick="setRate(1.3)">तेज़</button></div>
-  <button onclick="closeMenu();night()">🌙 रात मोड चालू/बंद</button>
+  <div class="mr">🔊 सुनाने की गति <button onclick="setRate(0.8)">धीमी</button><button onclick="setRate(1)">सामान्य</button><button onclick="setRate(1.3)">तेज़</button></div>
+  <div class="mr">↕️ क्रम <button onclick="setSort('new')">नई</button><button onclick="setSort('old')">पुरानी</button><button onclick="setSort('name')">नाम</button></div>
+  <button onclick="closeMenu();night()">🎨 पढ़ने का रंग बदलें</button>
   <button onclick="clearFav()">🤍 पसंद की सूची साफ़ करें</button>
   <button onclick="clearProg()">🔖 पढ़ने की प्रगति मिटाएँ</button>
   <hr>
@@ -119,6 +142,7 @@ body:not(.owner) #mnu .own{display:none}
 </div>
 <div id="prog"></div>
 <div id="toast"></div>
+<button id="up" onclick="scrollTo({top:0,behavior:'smooth'})" aria-label="ऊपर">⬆</button>
 
 <div class="w">
 
@@ -127,7 +151,7 @@ body:not(.owner) #mnu .own{display:none}
   <img class="logo" id="logoImg" src="logo.png" alt="" onerror="this.style.visibility='hidden'">
   <h1>📚 मेरा कहानी पुस्तकालय</h1>
   <p class="sub" id="gr"></p>
-  <input id="q" placeholder="🔍 कहानी खोजें...">
+  <input id="q" placeholder="🔍 कहानी या लेखक खोजें...">
 
   <div class="panel">
     <div class="lbl">📂 कैटेगरी</div>
@@ -144,34 +168,46 @@ body:not(.owner) #mnu .own{display:none}
 <!-- लिखें / बदलें (सिर्फ़ मालिक) -->
 <div id="write" class="v">
   <h1 id="wh">✍️ नई कहानी</h1>
-  <input id="wt" placeholder="📖 कहानी का शीर्षक">
+  <input id="wt" placeholder="📖 कहानी का शीर्षक" oninput="saveDraft()">
   <input id="wa" placeholder="🖋️ लेखक का नाम">
-  <select id="wc">
+  <select id="wc" onchange="saveDraft()">
     <option value="">कैटेगरी चुनें</option>
     <option>राजनीतिक</option><option>सामाजिक</option><option>जीवन</option>
     <option>प्रेम</option><option>विज्ञान</option><option>हास्य</option><option>रहस्य</option>
   </select>
-  <textarea id="wx" rows="14" placeholder="यहाँ कहानी कॉपी-पेस्ट करें..." oninput="wcount()"></textarea>
+  <div class="ctr">
+    <button class="bl" onclick="pasteClip()">📋 क्लिपबोर्ड से चिपकाएँ</button>
+    <button class="bl" onclick="firstLineTitle()">✂️ पहली पंक्ति = शीर्षक</button>
+  </div>
+  <textarea id="wx" rows="14" placeholder="यहाँ कहानी कॉपी-पेस्ट करें..." oninput="wcount();saveDraft()"></textarea>
   <p id="wcnt" class="sub"></p>
   <div class="ctr">
     <button class="ok" onclick="save()">💾 सेव करें</button>
     <button class="g" onclick="clearForm()">🧹 साफ़ करें</button>
-    <button class="g" onclick="view('home')">⬅ वापस</button>
+    <button class="g" onclick="goHome()">⬅ वापस</button>
+  </div>
+  <div class="ctr" style="margin-top:14px">
+    <button class="g" onclick="$('fi').click()">📂 .txt फ़ाइलों से जोड़ें</button>
+    <input type="file" id="fi" accept=".txt,text/plain" multiple style="display:none" onchange="importFiles(this)">
+    <p style="font-size:12px;color:#888;margin:4px">फ़ाइल का नाम <b>रहस्य__कहानी का नाम.txt</b> रखेंगे तो कैटेगरी अपने-आप लगेगी</p>
   </div>
 </div>
 
 <!-- पढ़ना -->
 <div id="read" class="v">
   <div class="ctr">
-    <button onclick="back()">⬅ वापस</button>
+    <button onclick="goHome()">⬅ वापस</button>
     <button onclick="sz(2)">A+</button>
     <button onclick="sz(-2)">A-</button>
+    <button id="bAud" class="ok" style="display:none" onclick="apOpen()">🎧 ऑडियो</button>
     <button onclick="say()">🔊 सुनें</button>
-    <button class="g" onclick="speechSynthesis.cancel();tok++">⏹</button>
-    <button class="g" onclick="night()">🌙</button>
+    <button class="g" onclick="stopSay()">⏹</button>
+    <button class="g" onclick="night()">🎨</button>
+    <button class="ok" onclick="shareIt()">📤</button>
   </div>
   <div id="bk"></div>
   <p id="pg" class="sub"></p>
+  <input type="range" id="pgs" min="0" max="1" value="0">
   <div class="ctr">
     <button onclick="go(-1)">◀ पिछला पन्ना</button>
     <button onclick="go(1)">अगला पन्ना ▶</button>
@@ -179,6 +215,23 @@ body:not(.owner) #mnu .own{display:none}
 </div>
 
 <div class="rights">© सर्वाधिकार सुरक्षित · बिना अनुमति नकल या पुनः प्रकाशन वर्जित</div>
+</div>
+
+<!-- 🎧 प्लेयर -->
+<div id="ap">
+  <div class="ar"><b id="at"></b><button onclick="apClose()">✕</button></div>
+  <input type="range" id="as" min="0" max="1000" value="0">
+  <div class="ar"><span id="atm">0:00 / 0:00</span><span id="apart"></span></div>
+  <div class="bt">
+    <button onclick="apPart(-1)">⏮</button>
+    <button onclick="apSkip(-15)">⏪15</button>
+    <button id="aplay" onclick="apToggle()">▶</button>
+    <button onclick="apSkip(30)">30⏩</button>
+    <button onclick="apPart(1)">⏭</button>
+    <button id="aspd" onclick="apSpeed()">1×</button>
+    <button id="asl" onclick="apSleep()">😴</button>
+  </div>
+  <audio id="au" preload="metadata"></audio>
 </div>
 
 <!-- बैकअप (सिर्फ़ मालिक) -->
@@ -193,17 +246,19 @@ body:not(.owner) #mnu .own{display:none}
 
 <script>
 /* ================= सेटिंग (यहीं से बदलें) ================= */
-const OWNER_PASS = "ChangeMe@123";     // ← अपना पासवर्ड यहाँ लिखें (स्पेस न रखें)
-const MAX_LINES  = 6;
-const MAX_CHARS  = 350;
-const MAX_COPIES = 3;
-const WINDOW_MS  = 10*60*1000;
+const OWNER_PASS = "ChangeMe@123";     // ← यहाँ अपना पासवर्ड लिखें (स्पेस न रखें)
+const MAX_LINES  = 6;                  // कॉपी में अधिकतम लाइन
+const MAX_CHARS  = 350;                // कॉपी में अधिकतम अक्षर
+const MAX_COPIES = 3;                  // इतने समय में अधिकतम कॉपी
+const WINDOW_MS  = 10*60*1000;         // 10 मिनट
 const SITE = location.origin + location.pathname.replace(/[^\/]*$/, "");
 
 const $=i=>document.getElementById(i);
-let A=[],F=[],shown=0,P=[],pi=0,cur=null,curList=[],tok=0,C="",mode="",favOnly=false,editId=null,editBase=null;
+let A=[],F=[],AUD={},shown=0,P=[],pi=0,cur=null,curList=[],tok=0,C="",mode="",favOnly=false,editId=null,editBase=null;
+let curV="home",SORT=localStorage.sort||"new",wl=null;
 let fs=+localStorage.fs||20;const PS=1200;
 let FAV=new Set(JSON.parse(localStorage.fav||"[]"));
+const inField=()=>["INPUT","TEXTAREA"].includes((document.activeElement||{}).tagName);
 
 /* ================= मालिक मोड ================= */
 const isOwner=()=>document.body.classList.contains("owner");
@@ -221,8 +276,10 @@ function ownerLogin(){
   }
   const p=prompt("🔑 पासवर्ड डालें:");
   if(p===null)return;
-  if(p.trim()===OWNER_PASS){setOwner(true);toast("🔓 मालिक मोड चालू")}
-  else toast("❌ गलत पासवर्ड");
+  if(p.trim()===OWNER_PASS){
+    setOwner(true);
+    toast(OWNER_PASS==="ChangeMe@123"?"⚠️ चालू हुआ — पर कोड में पासवर्ड बदल लें":"🔓 मालिक मोड चालू");
+  }else toast("❌ गलत पासवर्ड");
 }
 const isLocal=["localhost","127.0.0.1"].includes(location.hostname);
 document.body.classList.toggle("owner",isLocal||localStorage.owner==="1");
@@ -233,6 +290,51 @@ $("logoImg").addEventListener("click",()=>{
   taps++;clearTimeout(tapT);tapT=setTimeout(()=>taps=0,2500);
   if(taps>=3){taps=0;ownerLogin()}
 });
+
+/* ================= ⋮ मेन्यू ================= */
+function toggleMenu(){
+  const o=$("mnu").classList.toggle("on");
+  $("mnuBg").classList.toggle("on",o);
+}
+function closeMenu(){$("mnu").classList.remove("on");$("mnuBg").classList.remove("on")}
+function setRate(r){localStorage.rate=r;closeMenu();toast("🔊 गति बदल गई")}
+function setSort(s){SORT=s;localStorage.sort=s;closeMenu();sortA();filt();toast("↕️ क्रम बदल गया")}
+function clearFav(){
+  if(!confirm("सारी पसंद की सूची साफ़ करें?"))return;
+  FAV=new Set();localStorage.fav="[]";closeMenu();filt();toast("🤍 पसंद की सूची साफ़ हो गई");
+}
+function clearProg(){
+  if(!confirm("सब कहानियों की पढ़ने/सुनने की प्रगति मिटानी है?"))return;
+  Object.keys(localStorage).filter(k=>/^[pan]([0-9a-f]{8}|u\d+)$/.test(k)).forEach(k=>localStorage.removeItem(k));
+  localStorage.removeItem("last");
+  closeMenu();filt();toast("🔖 प्रगति मिट गई");
+}
+let dpInst=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dpInst=e});
+async function installApp(){
+  if(matchMedia("(display-mode: standalone)").matches||navigator.standalone){toast("✅ ऐप पहले से इंस्टॉल है");return}
+  if(dpInst){dpInst.prompt();try{await dpInst.userChoice}catch(e){}dpInst=null}
+  else alert("📲 Chrome में ऊपर ⋮ दबाइए → 'Install app' या 'Add to Home screen' चुनिए।\n\n(iPhone में: Safari → Share → Add to Home Screen)");
+}
+
+/* ================= शेयर ================= */
+async function shareIt(){
+  const inRead=curV==="read"&&cur;
+  const mine=inRead&&String(cur.id).startsWith("u");
+  const url=(inRead&&!mine)?SITE+"library.html?s="+cur.id:SITE;
+  const title=inRead?cur.t:"मेरा कहानी पुस्तकालय";
+  const text=inRead?("📖 "+cur.t+" — यह कहानी पढ़िए"):"📚 रोचक हिंदी कहानियाँ पढ़िए और सुनिए";
+  try{if(navigator.share){await navigator.share({title,text,url});return}}
+  catch(e){if(e&&e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(text+"\n"+url);toast("🔗 लिंक कॉपी हो गया")}
+  catch(e){prompt("यह लिंक कॉपी करें:",url)}
+}
+function openShared(){
+  const id=new URLSearchParams(location.search).get("s");
+  if(!id)return;
+  const x=A.find(v=>v.id===id);
+  if(x)op(x,A);
+}
 
 /* ================= IndexedDB ================= */
 const idb=new Promise((ok,no)=>{
@@ -259,6 +361,38 @@ function boom(){
   }
 }
 
+/* ================= पेज बदलना + फ़ोन का Back बटन ================= */
+function view(v,fromPop){
+  tok++;speechSynthesis.cancel();wakeOff();
+  document.querySelectorAll(".v").forEach(e=>e.classList.remove("on"));
+  $(v).classList.add("on");
+  if(!fromPop){
+    if(v!=="home"&&curV==="home")history.pushState({v},"");
+    else if(v!=="home")history.replaceState({v},"");
+  }
+  curV=v;
+  $("prog").style.width="0";
+  applyTheme();
+  scrollTo(0,0);toTop();
+}
+function goHome(){
+  if(history.state&&history.state.v)history.back();
+  else view("home",true);
+}
+window.addEventListener("popstate",e=>{
+  let v=(e.state&&e.state.v)||"home";
+  if(v==="read"&&!cur)v="home";
+  view(v,true);
+});
+if(history.state&&history.state.v)history.replaceState(null,"");
+
+function toTop(){$("up").style.display=(curV==="home"&&scrollY>500)?"block":"none"}
+window.addEventListener("scroll",toTop,{passive:true});
+
+/* ================= स्क्रीन जागी रखना ================= */
+async function wakeOn(){try{if("wakeLock" in navigator)wl=await navigator.wakeLock.request("screen")}catch(e){}}
+function wakeOff(){try{if(wl)wl.release()}catch(e){}wl=null}
+
 /* ================= कहानियाँ लोड + Base64 डिकोड ================= */
 function dec(b){
   const s=b.trim();
@@ -272,14 +406,20 @@ async function getText(s){
   if(!r.ok)throw new Error("fetch");
   return dec(await r.text());
 }
+function sortA(){
+  if(SORT==="name")A.sort((a,b)=>String(a.t).localeCompare(String(b.t),"hi"));
+  else if(SORT==="old")A.sort((a,b)=>(a.ts||0)-(b.ts||0));
+  else A.sort((a,b)=>(b.ts||0)-(a.ts||0));
+}
 async function load(){
   let base=[];
   try{base=await(await fetch("data/index.json")).json()}catch(e){}
+  try{AUD=await(await fetch("audio/index.json")).json()}catch(e){AUD={}}
   const mine=await dbAll();
   const m=new Map(base.map(s=>[s.id,s]));
   mine.forEach(s=>m.set(s.id,s));
-  A=[...m.values()].filter(s=>!s.del).sort((a,b)=>(b.ts||0)-(a.ts||0));
-  filt();
+  A=[...m.values()].filter(s=>!s.del);
+  sortA();filt();
 }
 
 /* ================= गोल बटन ================= */
@@ -316,19 +456,33 @@ function setMode(m){
 /* ================= सूची ================= */
 const SPINE=["#7a3b12","#1565c0","#2e7d32","#ad1457","#6a1b9a","#00695c","#ef6c00","#c62828"];
 function filt(){
-  const q=$("q").value.trim();
+  const q=$("q").value.trim().toLowerCase();
   F=A.filter(s=>{
-    const t=s.t+(s.p||"");
-    const catOk=!C||s.c===C||(!s.c&&t.includes(C));
+    const t=((s.t||"")+(s.p||"")+(s.a||"")).toLowerCase();
+    const catOk=!C||s.c===C||(!s.c&&t.includes(C.toLowerCase()));
     return t.includes(q)&&catOk&&(!favOnly||FAV.has(s.id));
   });
   const h=new Date().getHours();
   $("gr").textContent=(h<12?"सुप्रभात ☀️ ":h<17?"नमस्कार 🙏 ":h<21?"शुभ संध्या 🌆 ":"शुभ रात्रि 🌙 ")+"· "+F.length+" कहानियाँ";
   shown=0;$("o").innerHTML="";
+  contCard(q);
   if(!F.length){
-    $("o").innerHTML='<div class="empty">😕 कोई कहानी नहीं मिली<br><small>'+(favOnly?"अभी कोई पसंदीदा नहीं है — कार्ड पर 🤍 दबाइए":C?"इस कैटेगरी में अभी कुछ नहीं है":"अभी कोई कहानी नहीं है")+'</small></div>';
+    $("o").innerHTML+='<div class="empty">😕 कोई कहानी नहीं मिली<br><small>'+(favOnly?"अभी कोई पसंदीदा नहीं है — कार्ड पर 🤍 दबाइए":C?"इस कैटेगरी में अभी कुछ नहीं है":"अभी कोई कहानी नहीं है")+'</small></div>';
   }
   more();
+}
+function contCard(q){
+  if(q||C||favOnly)return;
+  const s=A.find(x=>x.id===localStorage.last);
+  if(!s)return;
+  const pg=+localStorage["p"+s.id]||0,N=+localStorage["n"+s.id]||0;
+  if(!N||pg<1||pg>=N)return;
+  const c=document.createElement("div");c.className="c cont";
+  c.innerHTML="<h3></h3><p></p>";
+  c.children[0].textContent="▶ जारी रखें: "+s.t;
+  c.children[1].textContent="पन्ना "+pg+" / "+N+" · "+Math.round(pg/N*100)+"% पढ़ी";
+  c.onclick=()=>op(s,A);
+  $("o").append(c);
 }
 function more(){
   F.slice(shown,shown+30).forEach((s,i)=>{
@@ -336,10 +490,16 @@ function more(){
     c.style.borderLeftColor=SPINE[(shown+i)%SPINE.length];
     c.style.animationDelay=Math.min(i,8)*.05+"s";
     c.innerHTML="<h3></h3><p></p><button class='hr'></button>";
-    c.children[0].textContent=(EMO[s.c]||"📖")+" "+s.t;
+    c.children[0].textContent=(AUD[s.id]?"🎧 ":"")+(EMO[s.c]||"📖")+" "+s.t;
     c.children[1].textContent=(s.p||"")+"…";
     const h=c.children[2];h.textContent=FAV.has(s.id)?"❤️":"🤍";
     h.onclick=e=>{e.stopPropagation();FAV.has(s.id)?FAV.delete(s.id):FAV.add(s.id);localStorage.fav=JSON.stringify([...FAV]);h.textContent=FAV.has(s.id)?"❤️":"🤍";if(favOnly)filt()};
+    const pg=+localStorage["p"+s.id]||0,N=+localStorage["n"+s.id]||0;
+    if(N&&pg>0){
+      const m=document.createElement("small");m.className="mini";
+      m.textContent=pg>=N?"✅ पूरी पढ़ी":"📖 "+Math.round(pg/N*100)+"% पढ़ी";
+      c.append(m);
+    }
     c.onclick=()=>{
       if(mode==="edit"&&isOwner())editStory(s);
       else if(mode==="del"&&isOwner())delStory(s);
@@ -351,13 +511,6 @@ function more(){
 }
 $("q").oninput=filt;$("m").onclick=more;
 
-function view(v){
-  tok++;speechSynthesis.cancel();
-  document.querySelectorAll(".v").forEach(e=>e.classList.remove("on"));
-  $(v).classList.add("on");
-  $("prog").style.width="0";
-  scrollTo(0,0);
-}
 function randomStory(){
   const L=F.length?F:A;
   if(!L.length){toast("अभी कोई कहानी नहीं है");return}
@@ -370,12 +523,25 @@ function wcount(){
   const n=$("wx").value.trim().split(/\s+/).filter(Boolean).length;
   $("wcnt").textContent=n?("📝 "+n+" शब्द · ⏱️ ~"+Math.max(1,Math.round(n/150))+" मिनट"):"";
 }
-function clearForm(){
+function saveDraft(){
+  if(editId)return;
+  localStorage.draft=JSON.stringify({t:$("wt").value,x:$("wx").value,c:$("wc").value});
+}
+function resetForm(){
   $("wt").value="";$("wx").value="";$("wc").value="";
   $("wa").value=localStorage.author||"";
   editId=null;editBase=null;$("wh").textContent="✍️ नई कहानी";wcount();
 }
-function newStory(){if(!isOwner())return;clearForm();view("write")}
+function clearForm(){resetForm();localStorage.removeItem("draft")}
+function newStory(){
+  if(!isOwner()){toast("🔐 पहले मालिक मोड चालू करें");return}
+  resetForm();
+  try{
+    const d=JSON.parse(localStorage.draft||"null");
+    if(d&&(d.t||d.x)){$("wt").value=d.t||"";$("wx").value=d.x||"";$("wc").value=d.c||"";wcount();toast("📝 अधूरा ड्राफ़्ट वापस मिला")}
+  }catch(e){}
+  view("write");
+}
 async function editStory(s){
   if(!isOwner())return;
   try{
@@ -386,6 +552,39 @@ async function editStory(s){
     view("write");
   }catch(e){toast("⚠️ कहानी खुल नहीं पाई")}
 }
+async function pasteClip(){
+  try{
+    const t=(await navigator.clipboard.readText()).trim();
+    if(!t){toast("📋 क्लिपबोर्ड खाली है");return}
+    $("wx").value=$("wx").value?($("wx").value+"\n\n"+t):t;
+    wcount();saveDraft();toast("✅ चिपक गया");
+  }catch(e){toast("⚠️ अनुमति नहीं मिली — बॉक्स में देर तक दबाकर चिपकाएँ")}
+}
+function firstLineTitle(){
+  const lines=$("wx").value.split("\n");
+  const i=lines.findIndex(l=>l.trim());
+  if(i<0){toast("पहले कहानी चिपकाएँ");return}
+  $("wt").value=lines[i].trim().replace(/^[#*\s]+/,"").slice(0,80);
+  lines.splice(i,1);
+  $("wx").value=lines.join("\n").trim();
+  wcount();saveDraft();toast("✂️ पहली पंक्ति शीर्षक बन गई");
+}
+async function importFiles(inp){
+  if(!isOwner())return;
+  let n=0;
+  for(const f of [...inp.files]){
+    if(!/\.txt$/i.test(f.name))continue;
+    const x=(await f.text()).trim();if(!x)continue;
+    let name=f.name.replace(/\.txt$/i,""),cat="";
+    const k=name.indexOf("__");
+    if(k>0&&CATS.some(c=>c[0]===name.slice(0,k))){cat=name.slice(0,k);name=name.slice(k+2)}
+    await dbPut({id:"u"+(Date.now()+n),t:name.trim(),a:localStorage.author||"",c:cat,text:x,p:x.replace(/\s+/g," ").slice(0,120),ts:Date.now()+n});
+    n++;
+  }
+  inp.value="";
+  await load();
+  toast("✅ "+n+" कहानियाँ जुड़ गईं");if(n)boom();
+}
 async function save(){
   if(!isOwner())return;
   const t=$("wt").value.trim(),x=$("wx").value.trim();
@@ -394,7 +593,7 @@ async function save(){
   const o={id:editId||("u"+Date.now()),t,a,c:$("wc").value,text:x,p:x.replace(/\s+/g," ").slice(0,120)};
   if(editId){if(editBase&&editBase.ts)o.ts=editBase.ts}else o.ts=Date.now();
   await dbPut(o);
-  clearForm();await load();view("home");
+  clearForm();await load();goHome();
   toast("✅ कहानी सेव हो गई!");boom();
 }
 async function delStory(s){
@@ -423,6 +622,16 @@ async function rs(){
 }
 
 /* ================= पढ़ना (बुक) ================= */
+const THN=["📄 कागज़ रंग","🌙 रात मोड","⬜ सफ़ेद"];
+function getTh(){let t=localStorage.th;if(t==null)t=localStorage.night==="1"?"1":"0";return t}
+function applyTheme(){
+  const t=getTh(),r=$("read");
+  r.classList.toggle("night",t==="1");
+  r.classList.toggle("white",t==="2");
+  document.body.classList.toggle("dk",curV==="read"&&t==="1");
+}
+function night(){localStorage.th=String((+getTh()+1)%3);applyTheme();toast(THN[+getTh()])}
+
 async function op(s,list){
   let t;
   try{t=await getText(s)}catch(e){toast("⚠️ कहानी लोड नहीं हो पाई");return}
@@ -438,27 +647,30 @@ async function op(s,list){
     const seg=t.slice(i,e).trim();if(seg)P.push(seg);
     i=e;
   }
-  pi=+localStorage["p"+s.id]||0;if(pi>=P.length)pi=0;
-  $("read").classList.toggle("night",localStorage.night==="1");
+  localStorage.last=s.id;
+  localStorage["n"+s.id]=P.length-1;
+  pi=+localStorage["p"+s.id]||0;if(pi>=P.length-1)pi=0;
+  $("bAud").style.display=AUD[s.id]?"":"none";
   view("read");show();
 }
 function nextStory(){const i=curList.indexOf(cur);return i>=0?curList[i+1]||null:null}
-function show(){
-  tok++;speechSynthesis.cancel();
+function show(keep){
+  if(!keep){tok++;speechSynthesis.cancel()}
   const bk=$("bk");bk.innerHTML="";
   const n=document.createElement("div");
+  const N=P.length-1;
   if(pi===0){
     n.className="cover";
     n.innerHTML='<img class="logo" src="logo.png" alt="" onerror="this.style.visibility=\'hidden\'"><h2></h2><div></div><p></p>';
     n.children[1].textContent=cur.t;
     n.children[2].textContent=cur.a?("— "+cur.a):"";
     n.children[3].style.cssText="margin-top:26px;font-size:13px";
-    n.children[3].textContent="⏱️ लगभग "+cur._min+" मिनट की कहानी · पन्ना पलटने के लिए स्वाइप करें ▶";
+    n.children[3].textContent="⏱️ लगभग "+cur._min+" मिनट की कहानी"+(AUD[cur.id]?" · 🎧 ऑडियो भी उपलब्ध":"")+" · पन्ना पलटने के लिए स्वाइप करें ▶";
   }else{
     n.className="book";
     const d=document.createElement("div");d.id="t";d.textContent=P[pi];d.style.fontSize=fs+"px";
     n.append(d);
-    if(pi===P.length-1){
+    if(pi===N){
       const e=document.createElement("div");e.className="ctr";e.style.marginTop="24px";
       e.innerHTML="<h3>~ 🎉 समाप्त ~</h3>";
       const nx=nextStory();
@@ -472,38 +684,166 @@ function show(){
   }
   bk.append(n);
   localStorage["p"+cur.id]=pi;
-  $("pg").textContent=pi===0?"📕 कवर":"पन्ना "+pi+" / "+(P.length-1);
-  $("prog").style.width=(P.length>1?pi/(P.length-1)*100:0)+"%";
+  const left=Math.max(0,Math.round((N-pi)*PS/900));
+  $("pg").textContent=pi===0?"📕 कवर · "+N+" पन्ने":"पन्ना "+pi+" / "+N+(left?" · ~"+left+" मिनट बाकी":" · 🎉 पूरी");
+  $("pgs").max=N;$("pgs").value=pi;
+  $("prog").style.width=(N>0?pi/N*100:0)+"%";
   scrollTo(0,0);
 }
 function go(d){pi=Math.max(0,Math.min(P.length-1,pi+d));show()}
 function sz(d){fs=Math.max(14,Math.min(40,fs+d));localStorage.fs=fs;const t=$("t");if(t)t.style.fontSize=fs+"px"}
-function night(){localStorage.night=localStorage.night==="1"?"0":"1";$("read").classList.toggle("night",localStorage.night==="1")}
-function back(){view("home")}
-function say(){
-  if(pi===0){pi=1;show()}
-  speechSynthesis.cancel();
-  const my=++tok,u=new SpeechSynthesisUtterance(P[pi]);
-  u.lang="hi-IN";u.rate=+localStorage.rate||1;
-  u.onend=()=>{if(my===tok&&pi<P.length-1){pi++;show();say()}};
-  speechSynthesis.speak(u);
-}
+$("pgs").oninput=()=>{$("pg").textContent="पन्ना "+$("pgs").value+" / "+(P.length-1)};
+$("pgs").onchange=()=>{pi=+$("pgs").value;show()};
+
 let sx=0;
 $("bk").addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});
 $("bk").addEventListener("touchend",e=>{
   const dx=e.changedTouches[0].clientX-sx;
   if(Math.abs(dx)>70)go(dx<0?1:-1);
 });
+document.addEventListener("keydown",e=>{
+  if(inField()||curV!=="read")return;
+  if(e.key==="ArrowRight")go(1);
+  if(e.key==="ArrowLeft")go(-1);
+});
+
+/* ================= 🔊 पढ़कर सुनाना (छोटे टुकड़ों में, बीच में नहीं रुकता) ================= */
+let voiceHi=null;
+function pickVoice(){
+  const v=speechSynthesis.getVoices().filter(x=>/^hi/i.test(x.lang));
+  voiceHi=v.find(x=>/google|neural|natural|online/i.test(x.name))||v[0]||null;
+}
+speechSynthesis.onvoiceschanged=pickVoice;pickVoice();
+function sp(t){
+  const o=[];
+  t.split(/(?<=[।!?.\n])/).forEach(s=>{
+    s=s.trim();
+    while(s.length>200){let k=s.lastIndexOf(" ",200);if(k<50)k=200;o.push(s.slice(0,k));s=s.slice(k).trim()}
+    if(s)o.push(s);
+  });
+  return o;
+}
+function say(){
+  if(!au.paused)au.pause();
+  if(pi===0){pi=1;show()}
+  speechSynthesis.cancel();
+  const my=++tok;
+  wakeOn();
+  let q=sp(P[pi]),i=0;
+  const next=()=>{
+    if(my!==tok)return;
+    if(i>=q.length){
+      if(pi<P.length-1){pi++;show(true);q=sp(P[pi]);i=0;next()}
+      else wakeOff();
+      return;
+    }
+    const u=new SpeechSynthesisUtterance(q[i++]);
+    u.lang="hi-IN";if(voiceHi)u.voice=voiceHi;
+    u.rate=+localStorage.rate||1;
+    u.onend=next;u.onerror=()=>{};
+    speechSynthesis.speak(u);
+  };
+  next();
+}
+function stopSay(){tok++;speechSynthesis.cancel();wakeOff()}
+
+/* ================= 🎧 ऑडियो प्लेयर (MP3 के हिस्से) ================= */
+const au=$("au");
+let apId=null,apN=0,apI=1,apTitle="",apSave=0,apSl=null,slI=0;
+const SL=[0,15,30,60],SPD=[1,1.25,1.5,0.85];
+const apUrl=(id,i)=>"audio/"+id+"/"+String(i).padStart(2,"0")+".mp3";
+const fmt=s=>{if(!isFinite(s))return"0:00";s=Math.floor(s);const m=Math.floor(s/60);return m+":"+String(s%60).padStart(2,"0")};
+
+function apOpen(){
+  if(!cur||!AUD[cur.id])return;
+  stopSay();
+  if(apId!==cur.id){
+    apId=cur.id;apN=AUD[apId].n;apTitle=cur.t;
+    $("at").textContent="🎧 "+apTitle;
+    let sv={};try{sv=JSON.parse(localStorage["a"+apId]||"{}")}catch(e){}
+    au.defaultPlaybackRate=+localStorage.arate||1;
+    $("aspd").textContent=(+localStorage.arate||1)+"×";
+    apLoad(sv.i||1,sv.t||0);
+  }
+  $("ap").classList.add("on");document.body.classList.add("hasap");
+  au.play().catch(()=>{});
+}
+function apLoad(i,t){
+  apI=Math.max(1,Math.min(apN,i));
+  au.src=apUrl(apId,apI);
+  au.playbackRate=+localStorage.arate||1;
+  if(t)au.addEventListener("loadedmetadata",()=>{au.currentTime=t},{once:true});
+  $("apart").textContent="भाग "+apI+" / "+apN;
+  apMeta();
+}
+function apToggle(){au.paused?au.play().catch(()=>{}):au.pause()}
+function apSkip(d){au.currentTime=Math.max(0,au.currentTime+d)}
+function apPart(d){
+  const n=apI+d;
+  if(n<1||n>apN){toast(n<1?"यह पहला भाग है":"यह आख़िरी भाग है");return}
+  apLoad(n,0);au.play().catch(()=>{});
+}
+function apSpeed(){
+  const c=+localStorage.arate||1;
+  const n=SPD[(SPD.indexOf(c)+1)%SPD.length];
+  localStorage.arate=n;au.defaultPlaybackRate=n;au.playbackRate=n;
+  $("aspd").textContent=n+"×";
+}
+function apSleep(){
+  slI=(slI+1)%SL.length;clearTimeout(apSl);
+  if(SL[slI]){
+    apSl=setTimeout(()=>{au.pause();toast("😴 टाइमर पूरा — ऑडियो रुका")},SL[slI]*60000);
+    toast("😴 "+SL[slI]+" मिनट बाद रुकेगा");
+  }else toast("😴 टाइमर बंद");
+  $("asl").textContent=SL[slI]?("😴"+SL[slI]):"😴";
+}
+function apClose(){
+  au.pause();
+  $("ap").classList.remove("on");document.body.classList.remove("hasap");
+}
+function apMeta(){
+  if(!("mediaSession" in navigator))return;
+  try{
+    navigator.mediaSession.metadata=new MediaMetadata({
+      title:apTitle,artist:"कहानी पुस्तकालय",album:"भाग "+apI+" / "+apN,
+      artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]
+    });
+  }catch(e){}
+}
+if("mediaSession" in navigator){
+  const ms=navigator.mediaSession,set=(a,f)=>{try{ms.setActionHandler(a,f)}catch(e){}};
+  set("play",()=>au.play());set("pause",()=>au.pause());
+  set("previoustrack",()=>apPart(-1));set("nexttrack",()=>apPart(1));
+  set("seekbackward",()=>apSkip(-15));set("seekforward",()=>apSkip(30));
+}
+au.onplay=()=>$("aplay").textContent="⏸";
+au.onpause=()=>{
+  $("aplay").textContent="▶";
+  if(apId)localStorage["a"+apId]=JSON.stringify({i:apI,t:au.currentTime});
+};
+au.ontimeupdate=()=>{
+  const d=au.duration||0;
+  if(d)$("as").value=au.currentTime/d*1000;
+  $("atm").textContent=fmt(au.currentTime)+" / "+fmt(d);
+  const now=Date.now();
+  if(apId&&now-apSave>4000){apSave=now;localStorage["a"+apId]=JSON.stringify({i:apI,t:au.currentTime})}
+};
+au.onended=()=>{
+  if(apI<apN){apLoad(apI+1,0);au.play().catch(()=>{})}
+  else{
+    $("aplay").textContent="▶";localStorage.removeItem("a"+apId);apId=null;
+    toast("🎉 पूरी कहानी सुन ली!");
+  }
+};
+au.onerror=()=>toast("⚠️ ऑडियो फ़ाइल नहीं मिली");
+$("as").oninput=()=>{if(au.duration)au.currentTime=$("as").value/1000*au.duration};
 
 /* ================= कॉपी-सुरक्षा ================= */
-const inField=()=>["INPUT","TEXTAREA"].includes((document.activeElement||{}).tagName);
-
 document.addEventListener("copy",e=>{
   if(isOwner()||inField())return;
   const sel=String(getSelection());
   if(!sel.trim())return;
   e.preventDefault();
-
   const now=Date.now();
   let log=[];
   try{log=JSON.parse(localStorage.cl||"[]").filter(t=>now-t<WINDOW_MS)}catch(_){}
@@ -524,76 +864,15 @@ document.addEventListener("copy",e=>{
 document.addEventListener("cut",e=>{if(!isOwner()&&!inField())e.preventDefault()});
 document.addEventListener("dragstart",e=>{if(!isOwner())e.preventDefault()});
 document.addEventListener("contextmenu",e=>{
-  if(!isOwner()&&!inField()&&$("read").classList.contains("on"))e.preventDefault();
+  if(!isOwner()&&!inField()&&curV==="read")e.preventDefault();
 });
 document.addEventListener("keydown",e=>{
   if(isOwner()||inField())return;
   if((e.ctrlKey||e.metaKey)&&["a","s","p","u"].includes(e.key.toLowerCase()))e.preventDefault();
 });
 
-/* ================= शेयर ================= */
-async function shareIt(){
-  const inRead = $("read").classList.contains("on") && cur;
-  const mine = inRead && String(cur.id).startsWith("u");
-  const url = (inRead && !mine) ? SITE + "library.html?s=" + cur.id : SITE;
-  const title = inRead ? cur.t : "मेरा कहानी पुस्तकालय";
-  const text = inRead ? ("📖 " + cur.t + " — यह कहानी पढ़िए") : "📚 रोचक हिंदी कहानियाँ पढ़िए और सुनिए";
-  try{
-    if(navigator.share){ await navigator.share({title, text, url}); return }
-  }catch(e){ if(e && e.name === "AbortError") return }
-  try{
-    await navigator.clipboard.writeText(text + "\n" + url);
-    toast("🔗 लिंक कॉपी हो गया — कहीं भी चिपकाइए");
-  }catch(e){ prompt("यह लिंक कॉपी करें:", url) }
-}
-function openShared(){
-  const id = new URLSearchParams(location.search).get("s");
-  if(!id) return;
-  const x = A.find(v => v.id === id);
-  if(x) op(x, A);
-}
-/* ================= ⋮ मेन्यू / सेटिंग ================= */
-function toggleMenu(){
-  const o = $("mnu").classList.toggle("on");
-  $("mnuBg").classList.toggle("on", o);
-}
-function closeMenu(){
-  $("mnu").classList.remove("on");
-  $("mnuBg").classList.remove("on");
-}
-function setRate(r){
-  localStorage.rate = r;
-  closeMenu();
-  toast("🔊 आवाज़ की गति बदल गई");
-}
-function clearFav(){
-  if(!confirm("सारी पसंद की सूची साफ़ करें?")) return;
-  FAV = new Set(); localStorage.fav = "[]";
-  closeMenu(); filt(); toast("🤍 पसंद की सूची साफ़ हो गई");
-}
-function clearProg(){
-  if(!confirm("सब कहानियों की पढ़ने की प्रगति मिटानी है?")) return;
-  Object.keys(localStorage).filter(k => /^p([0-9a-f]{8}|u\d+)$/.test(k))
-    .forEach(k => localStorage.removeItem(k));
-  closeMenu(); toast("🔖 प्रगति मिट गई");
-}
-let dpInst = null;
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); dpInst = e });
-async function installApp(){
-  if(matchMedia("(display-mode: standalone)").matches || navigator.standalone){
-    toast("✅ ऐप पहले से इंस्टॉल है"); return;
-  }
-  if(dpInst){
-    dpInst.prompt();
-    try{ await dpInst.userChoice }catch(e){}
-    dpInst = null;
-  }else{
-    alert("📲 Chrome में ऊपर ⋮ दबाइए → 'Install app' या 'Add to Home screen' चुनिए।\n\n(iPhone में: Safari → Share → Add to Home Screen)");
-  }
-}
-
 /* ================= शुरुआत ================= */
-clearForm();drawBtns();load().then(openShared);
+resetForm();drawBtns();applyTheme();load().then(openShared);
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
 </body>
