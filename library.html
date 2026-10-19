@@ -1,166 +1,396 @@
 <!doctype html>
 <html lang="hi">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>मेरा कहानी पुस्तकालय</title>
-    <style>
-        body{margin:0;background:#f5f0e8;font-family:sans-serif;color:#222}
-        .w{max-width:700px;margin:auto;padding:20px}
-        h1{color:#7a3b12; text-align:center; margin-top:0;}
-        .logo-header{text-align:center; margin-bottom: 10px;}
-        .logo-header img{width: 110px; height: 110px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
-        input{width:100%;padding:14px;border:1px solid #444;box-sizing:border-box;font-size:16px; border-radius:8px; margin-bottom:10px;}
-        .c{background:#fff;border-radius:14px;padding:16px;margin:12px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
-        .c h3{margin:0 0 6px}.c p{margin:0;color:#555}
-        button{padding:10px 14px;margin:4px;font-size:16px;border:0;border-radius:8px;background:#7a3b12;color:#fff; cursor:pointer;}
-        
-        /* नई कैटेगरी के बटन का डिज़ाइन */
-        .cats{display:flex;overflow-x:auto;gap:10px;padding:10px 0;margin-bottom:10px;scrollbar-width:none}
-        .cat{text-align:center;cursor:pointer;min-width:65px}
-        .cat-icon{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 5px;color:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.2)}
-        .cat span{font-size:11px;font-weight:bold;color:#444}
-        .c1{background:#c62828}.c2{background:#2e7d32}.c3{background:#ef6c00}.c4{background:#ad1457}.c5{background:#1565c0}.c6{background:#6a1b9a}.c7{background:#00695c}.c0{background:#555}
-        
-        #r{display:none}#t{line-height:1.9;white-space:pre-wrap; font-size:20px;}
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>मेरा कहानी पुस्तकालय</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;max-width:100%;overflow-x:hidden}
+body{background:#f5f0e8;font-family:sans-serif;color:#222;padding-top:56px}
+.top{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12);display:flex;align-items:center;padding:0 12px;z-index:60}
+.nav{background:#7a3b12;color:#fff;text-decoration:none;padding:8px 14px;border-radius:10px;font-size:15px;font-weight:bold}
+#prog{position:fixed;top:56px;left:0;height:4px;background:#ef6c00;width:0;z-index:61;transition:width .3s}
+.w{max-width:700px;margin:auto;padding:14px}
+.v{display:none}.v.on{display:block}
+h1{color:#7a3b12;text-align:center;margin:6px 0;font-size:24px}
+.logo{display:block;width:104px;height:104px;border-radius:50%;object-fit:cover;margin:6px auto;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.3);animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.sub{text-align:center;color:#555;margin:2px 0 10px;font-weight:bold;font-size:14px}
+input,select,textarea{width:100%;padding:13px;border:1px solid #888;border-radius:12px;font-size:16px;margin-bottom:10px;font-family:inherit;background:#fff}
+textarea{line-height:1.6}
+button{padding:10px 14px;margin:3px;font-size:15px;border:0;border-radius:10px;background:#7a3b12;color:#fff;cursor:pointer}
+button:active{transform:scale(.95)}
+button.g{background:#666}button.r{background:#b3261e}button.ok{background:#2e7d32}
+
+/* गोल बटनों का डिब्बा */
+.panel{background:#fff;border-radius:18px;padding:10px 6px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.lbl{font-size:12px;color:#888;font-weight:bold;margin:2px 10px}
+.grid{display:grid;gap:8px 2px;padding:6px 0}
+.g4{grid-template-columns:repeat(4,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.it{text-align:center;cursor:pointer;min-width:0}
+.ci{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 3px;color:#fff;box-shadow:0 3px 6px rgba(0,0,0,.25);border:3px solid transparent;transition:transform .15s}
+.it:active .ci{transform:scale(.88)}
+.it.sel .ci{border-color:#222;transform:scale(1.12)}
+.it span{font-size:10.5px;font-weight:bold;color:#444;display:block;white-space:nowrap}
+
+/* मोड पट्टी */
+#mb{display:none;text-align:center;font-weight:bold;padding:10px;border-radius:12px;margin:8px 0;color:#fff;animation:pop .3s}
+#mb.edit{display:block;background:#1565c0}#mb.del{display:block;background:#b3261e}
+@keyframes pop{from{transform:scale(.8);opacity:0}}
+
+/* किताब जैसे कार्ड */
+.c{position:relative;background:#fffdf7;border-radius:4px 14px 14px 4px;border-left:12px solid #7a3b12;padding:14px 46px 14px 14px;margin:12px 0;box-shadow:2px 3px 8px rgba(0,0,0,.15);animation:rise .4s both}
+@keyframes rise{from{transform:translateY(16px);opacity:0}}
+.c h3{margin:0 0 6px;font-size:18px}.c p{margin:0;color:#555;font-size:14px}
+.c .hr{position:absolute;right:8px;top:8px;font-size:22px;background:none;padding:2px;margin:0}
+body.del .c{animation:shake .5s infinite}
+@keyframes shake{25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
+.empty{text-align:center;color:#777;padding:30px 10px;font-size:17px}
+
+/* पढ़ना */
+.book{background:#fffdf7;color:#222;border-radius:6px 16px 16px 6px;border-left:14px solid #7a3b12;box-shadow:3px 5px 14px rgba(0,0,0,.25);padding:18px;min-height:60vh;margin:10px 0;transform-origin:left center;animation:flip .45s}
+@keyframes flip{from{transform:perspective(900px) rotateY(-60deg);opacity:.2}}
+.cover{background:linear-gradient(160deg,#7a3b12,#3d1c08);color:#f6d98a;text-align:center;border-radius:6px 16px 16px 6px;padding:30px 14px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:10px 0;box-shadow:3px 5px 14px rgba(0,0,0,.35);animation:flip .45s}
+.cover h2{font-size:28px;margin:16px 0 8px;line-height:1.4}
+.cover .logo{width:90px;height:90px}
+#t{line-height:1.9;white-space:pre-wrap;font-size:20px;word-wrap:break-word}
+#read.night .book{background:#1b1b1f;color:#ddd;border-left-color:#555}
+.ctr{text-align:center}
+
+/* बैकअप विंडो, टोस्ट, बौछार */
+#md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;align-items:center;justify-content:center;padding:16px}
+#md.on{display:flex}
+#md .bx{background:#fff;border-radius:18px;padding:16px;width:100%;max-width:500px}
+#toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:99;max-width:90%;text-align:center}
+.cf{position:fixed;top:-30px;font-size:26px;z-index:100;pointer-events:none;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.4}}
+</style>
 </head>
 <body>
-    <div class="w">
-        <!-- मुख्य पेज (लाइब्रेरी) -->
-        <div id="l">
-            <div class="logo-header">
-                <img src="logo.png" alt="Logo">
-            </div>
-            <h1>📚 मेरा कहानी पुस्तकालय</h1>
-            <p id="n" style="text-align:center; color:#555; font-weight:bold;"></p>
-            
-            <input id="q" placeholder="कहानी खोजें...">
-            
-            <!-- नई कैटेगरी के बटन -->
-            <div class="cats">
-                <div class="cat" onclick="setCat('')"><div class="cat-icon c0">📚</div><span>सभी</span></div>
-                <div class="cat" onclick="setCat('राजनीतिक')"><div class="cat-icon c1">🏛️</div><span>राजनीतिक</span></div>
-                <div class="cat" onclick="setCat('सामाजिक')"><div class="cat-icon c2">👥</div><span>सामाजिक</span></div>
-                <div class="cat" onclick="setCat('जीवन')"><div class="cat-icon c3">🌅</div><span>जीवन</span></div>
-                <div class="cat" onclick="setCat('प्रेम')"><div class="cat-icon c4">💖</div><span>प्रेम</span></div>
-                <div class="cat" onclick="setCat('विज्ञान')"><div class="cat-icon c5">🪐</div><span>विज्ञान</span></div>
-                <div class="cat" onclick="setCat('हास्य')"><div class="cat-icon c6">🎭</div><span>हास्य</span></div>
-                <div class="cat" onclick="setCat('रहस्य')"><div class="cat-icon c7">🕵️</div><span>रहस्य</span></div>
-            </div>
+<div class="top"><a href="index.html" class="nav">🏠 होम</a></div>
+<div id="prog"></div>
+<div id="toast"></div>
 
-            <div id="o"></div>
-            <button id="m">और दिखाएँ</button>
-        </div>
-        
-        <!-- कहानी पढ़ने का पेज -->
-        <div id="r">
-            <button onclick="back()">⬅ वापस</button>
-            <button onclick="sz(2)">A+</button>
-            <button onclick="sz(-2)">A-</button>
-            <button onclick="say()">🔊 सुनें</button>
-            <h2 id="rt"></h2>
-            <div id="t"></div>
-            <p id="pg"></p>
-            <button onclick="go(-1)">◀ पिछला</button>
-            <button onclick="go(1)">अगला ▶</button>
-        </div>
-    </div>
+<div class="w">
 
-    <script>
-        let A=[],F=[],shown=0,P=[],pi=0,cur=null,tok=0,fs=+localStorage.fs||20;
-        const $=i=>document.getElementById(i),PS=1500;
-        
-        fetch("data/index.json").then(r=>r.json()).then(d=>{A=d;$("n").textContent=d.length+" कहानियाँ";filt()});
-        
-        function filt(){
-            const q=$("q").value.trim();
-            F=A.filter(s=>(s.t+s.p).includes(q));
-            shown=0;
-            $("o").innerHTML="";
-            more();
-        }
-        
-        // कैटेगरी पर क्लिक करने का फंक्शन
-        function setCat(c){
-            $("q").value = c;
-            filt();
-        }
+<!-- मुख्य पेज -->
+<div id="home" class="v on">
+  <img class="logo" src="logo.png" alt="" onerror="this.style.visibility='hidden'">
+  <h1>📚 मेरा कहानी पुस्तकालय</h1>
+  <p class="sub" id="gr"></p>
+  <input id="q" placeholder="🔍 कहानी खोजें...">
 
-        function more(){
-            F.slice(shown,shown+30).forEach(s=>{
-                const c=document.createElement("div");
-                c.className="c";
-                c.innerHTML="<h3></h3><p></p>";
-                c.children[0].textContent=s.t;
-                c.children[1].textContent=s.p+"…";
-                c.onclick=()=>op(s);
-                $("o").append(c)
-            });
-            shown+=30;
-            $("m").style.display=shown<F.length?"":"none"
-        }
-        
-        $("q").oninput=filt;
-        $("m").onclick=more;
-        
-        async function op(s){
-            cur=s;
-            const t=await(await fetch("data/s/"+s.id+".txt")).text();
-            P=[];
-            for(let i=0;i<t.length;){
-                let e=Math.min(i+PS,t.length);
-                if(e<t.length){
-                    const b=Math.max(t.lastIndexOf("।",e),t.lastIndexOf("\n",e));
-                    if(b>i+PS/2)e=b+1
-                }
-                P.push(t.slice(i,e).trim());
-                i=e
-            }
-            pi=+localStorage["p"+s.id]||0;
-            $("l").style.display="none";
-            $("r").style.display="block";
-            $("rt").textContent=s.t;
-            show()
-        }
-        
-        function show(){
-            tok++;
-            speechSynthesis.cancel();
-            $("t").textContent=P[pi];
-            $("t").style.fontSize=fs+"px";
-            $("pg").textContent="पृष्ठ "+(pi+1)+" / "+P.length;
-            localStorage["p"+cur.id]=pi;
-            scrollTo(0,0)
-        }
-        
-        function go(d){
-            pi=Math.max(0,Math.min(P.length-1,pi+d));
-            show()
-        }
-        
-        function sz(d){
-            fs+=d;
-            localStorage.fs=fs;
-            $("t").style.fontSize=fs+"px"
-        }
-        
-        function back(){
-            tok++;
-            speechSynthesis.cancel();
-            $("r").style.display="none";
-            $("l").style.display="block"
-        }
-        
-        function say(){
-            speechSynthesis.cancel();
-            const my=++tok,u=new SpeechSynthesisUtterance(P[pi]);
-            u.lang="hi-IN";
-            u.onend=()=>{
-                if(my===tok&&pi<P.length-1){pi++;show();say()}
-            };
-            speechSynthesis.speak(u)
-        }
-    </script>
+  <div class="panel">
+    <div class="lbl">📂 कैटेगरी</div>
+    <div class="grid g4" id="cats"></div>
+    <div class="lbl">🧰 औज़ार</div>
+    <div class="grid g6" id="tools"></div>
+  </div>
+
+  <div id="mb"></div>
+  <div id="o"></div>
+  <div class="ctr"><button id="m">और दिखाएँ ⬇</button></div>
+</div>
+
+<!-- लिखें / संपादित -->
+<div id="write" class="v">
+  <h1 id="wh">✍️ नई कहानी</h1>
+  <input id="wt" placeholder="📖 कहानी का शीर्षक">
+  <input id="wa" placeholder="🖋️ लेखक का नाम">
+  <select id="wc">
+    <option value="">कैटेगरी चुनें</option>
+    <option>राजनीतिक</option><option>सामाजिक</option><option>जीवन</option>
+    <option>प्रेम</option><option>विज्ञान</option><option>हास्य</option><option>रहस्य</option>
+  </select>
+  <textarea id="wx" rows="14" placeholder="यहाँ कहानी कॉपी-पेस्ट करें..." oninput="wc()"></textarea>
+  <p id="wcnt" class="sub"></p>
+  <div class="ctr">
+    <button class="ok" onclick="save()">💾 सेव करें</button>
+    <button class="g" onclick="clearForm()">🧹 साफ़ करें</button>
+    <button class="g" onclick="view('home')">⬅ वापस</button>
+  </div>
+</div>
+
+<!-- पढ़ना -->
+<div id="read" class="v">
+  <div class="ctr">
+    <button onclick="back()">⬅ वापस</button>
+    <button onclick="sz(2)">A+</button>
+    <button onclick="sz(-2)">A-</button>
+    <button onclick="say()">🔊 सुनें</button>
+    <button class="g" onclick="speechSynthesis.cancel();tok++">⏹</button>
+    <button class="g" onclick="night()">🌙</button>
+  </div>
+  <div id="bk"></div>
+  <p id="pg" class="sub"></p>
+  <div class="ctr">
+    <button onclick="go(-1)">◀ पिछला पन्ना</button>
+    <button onclick="go(1)">अगला पन्ना ▶</button>
+  </div>
+</div>
+
+</div>
+
+<!-- बैकअप विंडो -->
+<div id="md"><div class="bx">
+  <h3 style="margin-top:0">💾 बैकअप</h3>
+  <p style="font-size:13px;color:#555">आपकी नई/बदली कहानियाँ इसी फ़ोन के ब्राउज़र में रहती हैं। डेटा साफ़ करने से पहले बैकअप कॉपी करके कहीं सेव कर लें।</p>
+  <button onclick="bk()">📋 बैकअप कॉपी करें</button>
+  <textarea id="bx" rows="4" placeholder="बैकअप वापस डालने के लिए यहाँ पेस्ट करें"></textarea>
+  <button class="ok" onclick="rs()">📥 वापस डालें</button>
+  <button class="g" onclick="$('md').classList.remove('on')">बंद करें</button>
+</div></div>
+
+<script>
+const $=i=>document.getElementById(i);
+let A=[],F=[],shown=0,P=[],pi=0,cur=null,curList=[],tok=0,C="",mode="",favOnly=false,editId=null,editBase=null;
+let fs=+localStorage.fs||20;const PS=1200;
+let FAV=new Set(JSON.parse(localStorage.fav||"[]"));
+
+/* ---------- IndexedDB ---------- */
+const idb=new Promise((ok,no)=>{
+  const r=indexedDB.open("kosh",1);
+  r.onupgradeneeded=()=>r.result.createObjectStore("s",{keyPath:"id"});
+  r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);
+});
+const tx=(m,f)=>idb.then(d=>new Promise((ok,no)=>{
+  const t=d.transaction("s",m),q=f(t.objectStore("s"));
+  t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>no(t.error);
+}));
+const dbAll=()=>tx("readonly",s=>s.getAll());
+const dbPut=o=>tx("readwrite",s=>s.put(o));
+const dbDel=id=>tx("readwrite",s=>s.delete(id));
+
+function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",2200)}
+function boom(em){
+  const E=em||["🎉","✨","📚","🌟","💖","🎊"];
+  for(let i=0;i<30;i++){
+    const s=document.createElement("span");s.className="cf";
+    s.textContent=E[i%E.length];s.style.left=Math.random()*96+"vw";
+    s.style.animationDelay=Math.random()*.6+"s";
+    document.body.append(s);setTimeout(()=>s.remove(),2600);
+  }
+}
+
+/* ---------- लोड ---------- */
+async function load(){
+  let base=[];
+  try{base=await(await fetch("data/index.json")).json()}catch(e){}
+  const mine=await dbAll();
+  const m=new Map(base.map(s=>[s.id,s]));
+  mine.forEach(s=>m.set(s.id,s));
+  A=[...m.values()].filter(s=>!s.del).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  filt();
+}
+async function getText(s){
+  if(s.text!=null)return s.text;
+  return await(await fetch("data/s/"+s.id+".txt")).text();
+}
+
+/* ---------- गोल बटन ---------- */
+const CATS=[["","📚","सभी","#555"],["राजनीतिक","🏛️","राजनीतिक","#c62828"],["सामाजिक","👥","सामाजिक","#2e7d32"],["जीवन","🌅","जीवन","#ef6c00"],["प्रेम","💖","प्रेम","#ad1457"],["विज्ञान","🪐","विज्ञान","#1565c0"],["हास्य","🎭","हास्य","#6a1b9a"],["रहस्य","🕵️","रहस्य","#00695c"]];
+const EMO={"राजनीतिक":"🏛️","सामाजिक":"👥","जीवन":"🌅","प्रेम":"💖","विज्ञान":"🪐","हास्य":"🎭","रहस्य":"🕵️"};
+const TOOLS=[
+ ["write","✍️","लिखें","#2e7d32",()=>newStory()],
+ ["edit","✏️","बदलें","#1565c0",()=>setMode("edit")],
+ ["del","🗑️","मिटाएँ","#b3261e",()=>setMode("del")],
+ ["fav","❤️","पसंद","#d81b60",()=>{favOnly=!favOnly;drawBtns();filt()}],
+ ["rnd","🎲","कोई भी","#6a1b9a",()=>randomStory()],
+ ["bak","💾","बैकअप","#455a64",()=>$("md").classList.add("on")]
+];
+function btn(parent,ic,nm,col,on,fn){
+  const d=document.createElement("div");d.className="it"+(on?" sel":"");
+  d.innerHTML='<div class="ci"></div><span></span>';
+  d.children[0].textContent=ic;d.children[0].style.background=col;
+  d.children[1].textContent=nm;d.onclick=fn;parent.append(d);
+}
+function drawBtns(){
+  $("cats").innerHTML="";$("tools").innerHTML="";
+  CATS.forEach(([k,ic,nm,col])=>btn($("cats"),ic,nm,col,C===k,()=>{C=k;drawBtns();filt()}));
+  TOOLS.forEach(([k,ic,nm,col,fn])=>btn($("tools"),ic,nm,col,(mode===k)||(k==="fav"&&favOnly),fn));
+}
+function setMode(m){
+  mode=(mode===m)?"":m;
+  document.body.classList.toggle("del",mode==="del");
+  const b=$("mb");b.className=mode;
+  b.textContent=mode==="edit"?"✏️ किस कहानी को बदलना है? उसे छुएँ (फिर से ✏️ दबाकर बंद करें)":mode==="del"?"🗑️ किसे मिटाना है? उसे छुएँ (फिर से 🗑️ दबाकर बंद करें)":"";
+  drawBtns();
+}
+
+/* ---------- सूची ---------- */
+const SPINE=["#7a3b12","#1565c0","#2e7d32","#ad1457","#6a1b9a","#00695c","#ef6c00","#c62828"];
+function filt(){
+  const q=$("q").value.trim();
+  F=A.filter(s=>{
+    const t=s.t+(s.p||"");
+    return t.includes(q)&&(!C||s.c===C)&&(!favOnly||FAV.has(s.id));
+  });
+  $("gr").textContent=(new Date().getHours()<12?"सुप्रभात ☀️ ":new Date().getHours()<17?"नमस्कार 🙏 ":"शुभ संध्या 🌙 ")+"· "+F.length+" कहानियाँ";
+  shown=0;$("o").innerHTML="";
+  if(!F.length){
+    $("o").innerHTML='<div class="empty">😕 कोई कहानी नहीं मिली<br><small>'+(C?"इस कैटेगरी में अभी कुछ नहीं है। ✍️ से लिखिए!":"✍️ दबाकर पहली कहानी जोड़िए")+'</small></div>';
+  }
+  more();
+}
+function more(){
+  F.slice(shown,shown+30).forEach((s,i)=>{
+    const c=document.createElement("div");c.className="c";
+    c.style.borderLeftColor=SPINE[(shown+i)%SPINE.length];
+    c.style.animationDelay=Math.min(i,8)*.05+"s";
+    c.innerHTML="<h3></h3><p></p><button class='hr'></button>";
+    c.children[0].textContent=(EMO[s.c]||"📖")+" "+s.t;
+    c.children[1].textContent=(s.p||"")+"…";
+    const h=c.children[2];h.textContent=FAV.has(s.id)?"❤️":"🤍";
+    h.onclick=e=>{e.stopPropagation();FAV.has(s.id)?FAV.delete(s.id):FAV.add(s.id);localStorage.fav=JSON.stringify([...FAV]);h.textContent=FAV.has(s.id)?"❤️":"🤍";if(favOnly)filt()};
+    c.onclick=()=>{
+      if(mode==="edit")editStory(s);
+      else if(mode==="del")delStory(s);
+      else op(s,F);
+    };
+    $("o").append(c);
+  });
+  shown+=30;$("m").style.display=shown<F.length?"":"none";
+}
+$("q").oninput=filt;$("m").onclick=more;
+
+function view(v){
+  tok++;speechSynthesis.cancel();
+  document.querySelectorAll(".v").forEach(e=>e.classList.remove("on"));
+  $(v).classList.add("on");
+  $("prog").style.width="0";
+  scrollTo(0,0);
+}
+function randomStory(){
+  const L=F.length?F:A;
+  if(!L.length){toast("अभी कोई कहानी नहीं है");return}
+  const s=L[Math.floor(Math.random()*L.length)];
+  toast("🎲 आज की कहानी: "+s.t);op(s,L);
+}
+
+/* ---------- लिखना / संपादन / हटाना ---------- */
+function wc(){
+  const n=$("wx").value.trim().split(/\s+/).filter(Boolean).length;
+  $("wcnt").textContent=n?("📝 "+n+" शब्द · ⏱️ ~"+Math.max(1,Math.round(n/150))+" मिनट"):"";
+}
+function clearForm(){
+  $("wt").value="";$("wx").value="";$("wc").value="";
+  $("wa").value=localStorage.author||"";
+  editId=null;editBase=null;$("wh").textContent="✍️ नई कहानी";wc();
+}
+function newStory(){clearForm();view("write")}
+async function editStory(s){
+  const t=await getText(s);
+  editId=s.id;editBase=s;
+  $("wh").textContent="✏️ कहानी बदलिए";
+  $("wt").value=s.t;$("wx").value=t;$("wc").value=s.c||"";$("wa").value=s.a||localStorage.author||"";wc();
+  view("write");
+}
+async function save(){
+  const t=$("wt").value.trim(),x=$("wx").value.trim();
+  if(!t||!x){toast("⚠️ शीर्षक और कहानी दोनों भरें");return}
+  const a=$("wa").value.trim();if(a)localStorage.author=a;
+  const o={id:editId||("u"+Date.now()),t,a,c:$("wc").value,text:x,p:x.replace(/\s+/g," ").slice(0,80)};
+  if(editId){if(editBase&&editBase.ts)o.ts=editBase.ts}else o.ts=Date.now();
+  await dbPut(o);
+  clearForm();await load();view("home");
+  toast("✅ कहानी सेव हो गई!");boom();
+}
+async function delStory(s){
+  if(!confirm("😮 क्या सच में '"+s.t+"' मिटानी है?"))return;
+  if(String(s.id).startsWith("u"))await dbDel(s.id);
+  else await dbPut({id:s.id,t:s.t,del:true});
+  FAV.delete(s.id);localStorage.fav=JSON.stringify([...FAV]);
+  toast("🗑️ कहानी मिट गई");await load();
+}
+
+/* ---------- बैकअप ---------- */
+async function bk(){
+  const d=JSON.stringify(await dbAll());
+  try{await navigator.clipboard.writeText(d);toast("📋 कॉपी हो गया — कहीं सेव कर लें")}
+  catch(e){$("bx").value=d;$("bx").select();toast("नीचे के बॉक्स से कॉपी करें")}
+}
+async function rs(){
+  try{
+    const d=JSON.parse($("bx").value);
+    for(const o of d)await dbPut(o);
+    $("bx").value="";$("md").classList.remove("on");toast("✅ बैकअप वापस आ गया");boom();await load();
+  }catch(e){toast("⚠️ बैकअप सही नहीं है")}
+}
+
+/* ---------- पढ़ना ---------- */
+async function op(s,list){
+  cur=s;curList=list||A;
+  const t=await getText(s);
+  cur._min=Math.max(1,Math.round(t.length/900));
+  P=[null];
+  for(let i=0;i<t.length;){
+    let e=Math.min(i+PS,t.length);
+    if(e<t.length){
+      const b=Math.max(t.lastIndexOf("।",e),t.lastIndexOf("\n",e));
+      if(b>i+PS/2)e=b+1;
+    }
+    const seg=t.slice(i,e).trim();if(seg)P.push(seg);
+    i=e;
+  }
+  pi=+localStorage["p"+s.id]||0;if(pi>=P.length)pi=0;
+  $("read").classList.toggle("night",localStorage.night==="1");
+  view("read");show();
+}
+function nextStory(){const i=curList.indexOf(cur);return i>=0?curList[i+1]||null:null}
+function show(){
+  tok++;speechSynthesis.cancel();
+  const bk=$("bk");bk.innerHTML="";
+  const n=document.createElement("div");
+  if(pi===0){
+    n.className="cover";
+    n.innerHTML='<img class="logo" src="logo.png" onerror="this.style.visibility=\'hidden\'"><h2></h2><div></div><p></p>';
+    n.children[1].textContent=cur.t;
+    n.children[2].textContent=cur.a?("— "+cur.a):"";
+    n.children[3].style.cssText="margin-top:26px;font-size:13px";
+    n.children[3].textContent="⏱️ लगभग "+cur._min+" मिनट की कहानी · पन्ना पलटने के लिए स्वाइप करें ▶";
+  }else{
+    n.className="book";
+    const d=document.createElement("div");d.id="t";d.textContent=P[pi];d.style.fontSize=fs+"px";
+    n.append(d);
+    if(pi===P.length-1){
+      const e=document.createElement("div");e.className="ctr";e.style.marginTop="24px";
+      e.innerHTML="<h3>~ 🎉 समाप्त ~</h3>";
+      const nx=nextStory();
+      if(nx){
+        const b=document.createElement("button");b.className="ok";
+        b.textContent="➡ अगली कहानी: "+nx.t;b.onclick=()=>op(nx,curList);
+        e.append(b);
+      }
+      n.append(e);
+    }
+  }
+  bk.append(n);
+  localStorage["p"+cur.id]=pi;
+  $("pg").textContent=pi===0?"📕 कवर":"पन्ना "+pi+" / "+(P.length-1);
+  $("prog").style.width=(P.length>1?pi/(P.length-1)*100:0)+"%";
+  scrollTo(0,0);
+}
+function go(d){pi=Math.max(0,Math.min(P.length-1,pi+d));show()}
+function sz(d){fs=Math.max(14,Math.min(40,fs+d));localStorage.fs=fs;const t=$("t");if(t)t.style.fontSize=fs+"px"}
+function night(){localStorage.night=localStorage.night==="1"?"0":"1";$("read").classList.toggle("night",localStorage.night==="1")}
+function back(){view("home")}
+function say(){
+  if(pi===0){pi=1;show()}
+  speechSynthesis.cancel();
+  const my=++tok,u=new SpeechSynthesisUtterance(P[pi]);
+  u.lang="hi-IN";
+  u.onend=()=>{if(my===tok&&pi<P.length-1){pi++;show();say()}};
+  speechSynthesis.speak(u);
+}
+let sx=0;
+$("bk").addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});
+$("bk").addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-sx;
+  if(Math.abs(dx)>70)go(dx<0?1:-1);
+});
+
+clearForm();drawBtns();load();
+</script>
 </body>
-
+</html>
