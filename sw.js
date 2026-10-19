@@ -1,4 +1,4 @@
-const CACHE = 'kahani-cache-v1792401757';
+const CACHE = 'kahani-cache-v1792402767';
 const CORE = [
   './', './index.html', './library.html', './privacy.html',
   './logo.png', './manifest.json',

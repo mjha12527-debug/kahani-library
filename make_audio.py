@@ -6,40 +6,68 @@ CANDS = [os.environ.get("SRC", ""), "kahaniyan", HOME + "/kahaniyan",
          HOME + "/storage/shared/kahaniyan", HOME + "/kahani-library/kahaniyan"]
 SRC = next((c for c in CANDS if c and os.path.isdir(c)), None)
 OUT = os.environ.get("OUT", HOME + "/kahani-library/audio")
-VOICE = os.environ.get("VOICE", "hi-IN-SwaraNeural")   
-RATE = os.environ.get("RATE", "-8%")                  # भावनाओं के लिए रफ्तार धीमी (-8%)
-CHUNK = 2500      
-PART = 18000      
+VOICE = os.environ.get("VOICE", "hi-IN-SwaraNeural")   # पुरुष आवाज़: hi-IN-MadhurNeural
+RATE = os.environ.get("RATE", "+0%")                  # धीमी: -10%   तेज़: +10%
+EMO = os.environ.get("EMO", "1") != "0"               # भाव बंद करने के लिए EMO=0
+try:
+    BASE = int(RATE.replace("%", "").replace("+", ""))
+except Exception:
+    BASE = 0
+CHUNK = 1500      # एक टुकड़े में अधिकतम अक्षर
+PART = 18000      # एक MP3 भाग में करीब इतने अक्षर (लगभग 20 मिनट)
+
+SADR = re.compile(r"(^|\s)(?:आँसू|आंसू|दुख|दुःख|दर्द|अकेल|मौत|बिछड़|तड़प|सिसक|उदास|रो(?:ना|ने|ता|ती|ते|या|ई|यी))")
+ANGR = re.compile(r"(^|\s)(?:गुस्स|क्रोध|चीख|चिल्ला|दहाड़|धिक्कार|खबरदार|ख़बरदार|बर्दाश्त|गद्दार|ग़द्दार)")
+HAPR = re.compile(r"(^|\s)(?:खुश|ख़ुश|हँस|हंस|मुस्कु|खिलखिला|मज़ा|मजा|जश्न|बधाई|शाबाश)")
+# भाव: (गति में बदलाव %, सुर में बदलाव Hz)
+EMOS = {"N": (0, 0), "E": (6, 3), "S": (-10, -3), "A": (8, 2), "H": (4, 4)}
 
 def clean(t):
     t = re.sub(r"https?://\S+", " ", t)
     t = t.replace("॥", "।")
-    # विराम चिह्नों (कॉमा, डैश, पूर्ण विराम आदि) को रहने दें ताकि ठहराव आए
-    t = re.sub(r"[^\w\s।.!?,—…\u200c\u200d\u0900-\u097F]", " ", t)
-    t = re.sub(r"\n+", "\n", t) 
+    t = re.sub(r"(\.{2,}|…)", ". ", t)
+    t = re.sub(r"[^\w\s।.!?\u200c\u200d\u0900-\u097F]", " ", t)
+    t = t.replace("_", " ")
     return t
+
+def cls(s):
+    if not EMO:
+        return "N"
+    if SADR.search(s):
+        return "S"
+    if ANGR.search(s):
+        return "A"
+    if HAPR.search(s):
+        return "H"
+    if s.rstrip().endswith("!"):
+        return "E"
+    return "N"
 
 def split(t):
     t = clean(t)
-    t = re.sub(r"[ \t]+", " ", t)
-    sents = [s for s in re.split(r"(?<=[।!?\n])", t) if s.strip()]
-    out, cur = [], ""
+    sents = [x.strip() for x in re.split(r"(?<=[।.!?])\s+|\n+", t) if x.strip()]
+    out, cur, ck = [], "", "N"
+    def flush():
+        nonlocal cur
+        if cur.strip():
+            out.append("<<" + ck + ">>" + cur.strip())
+        cur = ""
     for s in sents:
+        k = cls(s)
+        if cur and (k != ck or len(cur) + len(s) > CHUNK):
+            flush()
         while len(s) > CHUNK:
-            k = s.rfind(" ", 0, CHUNK)
-            k = k if k > 0 else CHUNK
-            if cur:
-                out.append(cur); cur = ""
-            out.append(s[:k]); s = s[k:]
-        if len(cur) + len(s) > CHUNK:
-            if cur:
-                out.append(cur)
-            cur = s
-        else:
-            cur += s
-    if cur.strip():
-        out.append(cur)
-    return [c.strip() for c in out if c.strip()]
+            j = s.rfind(" ", 0, CHUNK)
+            j = j if j > 0 else CHUNK
+            ck = k
+            cur = s[:j]
+            flush()
+            s = s[j:].strip()
+        if s:
+            ck = k
+            cur = (cur + " " + s).strip()
+    flush()
+    return out
 
 def group(chunks):
     parts, cur, n = [], [], 0
@@ -52,9 +80,16 @@ def group(chunks):
     return parts
 
 async def speak(text, path):
+    m = re.match(r"<<(\w)>>", text)
+    k = m.group(1) if m else "N"
+    if m:
+        text = text[m.end():]
+    dr, dp = EMOS.get(k, (0, 0))
+    rate = "%+d%%" % (BASE + dr)
+    pitch = "%+dHz" % dp
     for i in range(4):
         try:
-            await edge_tts.Communicate(text, VOICE, rate=RATE).save(path)
+            await edge_tts.Communicate(text, VOICE, rate=rate, pitch=pitch).save(path)
             if os.path.getsize(path) > 1000:
                 return True
         except Exception as e:
@@ -64,7 +99,7 @@ async def speak(text, path):
 
 async def main():
     if not SRC:
-        print("❌ 'kahaniyan' फ़ोल्डर नहीं मिला।")
+        print("❌ 'kahaniyan' फ़ोल्डर नहीं मिला। चलाइए: SRC=/पूरा/रास्ता python make_audio.py")
         return
     only = sys.argv[1] if len(sys.argv) > 1 else ""
     os.makedirs(OUT, exist_ok=True)
@@ -82,7 +117,7 @@ async def main():
         parts = group(split(t))
         d = f"{OUT}/{sid}"
         os.makedirs(d, exist_ok=True)
-        print(f"🎙️ {name} — {len(t)} अक्षर, {len(parts)} भाग")
+        print(f"🎙️ {name} — {len(t)} अक्षर, {len(parts)} भाग" + (" · 🎭 भाव चालू" if EMO else ""))
         ok = True
         for pi, chs in enumerate(parts, 1):
             pf = f"{d}/{pi:02d}.mp3"
@@ -106,8 +141,8 @@ async def main():
             idx[sid] = {"n": len(parts), "t": name, "done": True}
             json.dump(idx, open(ip, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
         else:
-            print("⚠️ अधूरी रही:", name)
+            print("⚠️ अधूरी रही (दोबारा चलाने पर वहीं से आगे बढ़ेगी):", name)
     tot = sum(os.path.getsize(os.path.join(r, x)) for r, _, fs in os.walk(OUT) for x in fs)
-    print("\n📦 audio फ़ोल्डर का कुल आकार:", round(tot / 1e6, 1), "MB")
+    print("\n📦 audio फ़ोल्डर का कुल आकार:", round(tot / 1e6, 1), "MB  (GitHub के लिए 1000 MB के अंदर रखें)")
 
 asyncio.run(main())
