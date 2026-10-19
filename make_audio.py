@@ -6,16 +6,17 @@ CANDS = [os.environ.get("SRC", ""), "kahaniyan", HOME + "/kahaniyan",
          HOME + "/storage/shared/kahaniyan", HOME + "/kahani-library/kahaniyan"]
 SRC = next((c for c in CANDS if c and os.path.isdir(c)), None)
 OUT = os.environ.get("OUT", HOME + "/kahani-library/audio")
-VOICE = os.environ.get("VOICE", "hi-IN-SwaraNeural")   # पुरुष आवाज़: hi-IN-MadhurNeural
-RATE = os.environ.get("RATE", "+0%")                  # धीमी: -10%   तेज़: +10%
-CHUNK = 2500      # एक बार में भेजे जाने वाले अक्षर
-PART = 18000      # एक MP3 भाग में करीब इतने अक्षर (लगभग 20 मिनट)
+VOICE = os.environ.get("VOICE", "hi-IN-SwaraNeural")   
+RATE = os.environ.get("RATE", "-8%")                  # भावनाओं के लिए रफ्तार धीमी (-8%)
+CHUNK = 2500      
+PART = 18000      
 
 def clean(t):
     t = re.sub(r"https?://\S+", " ", t)
     t = t.replace("॥", "।")
-    t = re.sub(r"[^\w\s।.!?\u200c\u200d\u0900-\u097F]", " ", t)
-    t = t.replace("_", " ")
+    # विराम चिह्नों (कॉमा, डैश, पूर्ण विराम आदि) को रहने दें ताकि ठहराव आए
+    t = re.sub(r"[^\w\s।.!?,—…\u200c\u200d\u0900-\u097F]", " ", t)
+    t = re.sub(r"\n+", "\n", t) 
     return t
 
 def split(t):
@@ -63,7 +64,7 @@ async def speak(text, path):
 
 async def main():
     if not SRC:
-        print("❌ 'kahaniyan' फ़ोल्डर नहीं मिला। चलाइए: SRC=/पूरा/रास्ता python make_audio.py")
+        print("❌ 'kahaniyan' फ़ोल्डर नहीं मिला।")
         return
     only = sys.argv[1] if len(sys.argv) > 1 else ""
     os.makedirs(OUT, exist_ok=True)
@@ -105,8 +106,8 @@ async def main():
             idx[sid] = {"n": len(parts), "t": name, "done": True}
             json.dump(idx, open(ip, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
         else:
-            print("⚠️ अधूरी रही (दोबारा चलाने पर वहीं से आगे बढ़ेगी):", name)
+            print("⚠️ अधूरी रही:", name)
     tot = sum(os.path.getsize(os.path.join(r, x)) for r, _, fs in os.walk(OUT) for x in fs)
-    print("\n📦 audio फ़ोल्डर का कुल आकार:", round(tot / 1e6, 1), "MB  (GitHub के लिए 1000 MB के अंदर रखें)")
+    print("\n📦 audio फ़ोल्डर का कुल आकार:", round(tot / 1e6, 1), "MB")
 
 asyncio.run(main())
