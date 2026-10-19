@@ -1,10 +1,17 @@
 <!doctype html>
 <html lang="hi">
-<head><link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="logo.png">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>मेरा कहानी पुस्तकालय</title>
+
+<!-- सुरक्षा -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<script>if(window.top!==window.self){window.top.location=window.self.location}</script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;max-width:100%;overflow-x:hidden}
@@ -15,7 +22,7 @@ body{background:#f5f0e8;font-family:sans-serif;color:#222;padding-top:56px}
 .w{max-width:700px;margin:auto;padding:14px}
 .v{display:none}.v.on{display:block}
 h1{color:#7a3b12;text-align:center;margin:6px 0;font-size:24px}
-.logo{display:block;width:104px;height:104px;border-radius:50%;object-fit:cover;margin:6px auto;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.3);animation:bob 3s ease-in-out infinite}
+.logo{display:block;width:104px;height:104px;border-radius:50%;object-fit:cover;margin:6px auto;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.3);animation:bob 3s ease-in-out infinite;cursor:pointer}
 @keyframes bob{50%{transform:translateY(-6px)}}
 .sub{text-align:center;color:#555;margin:2px 0 10px;font-weight:bold;font-size:14px}
 input,select,textarea{width:100%;padding:13px;border:1px solid #888;border-radius:12px;font-size:16px;margin-bottom:10px;font-family:inherit;background:#fff}
@@ -35,13 +42,20 @@ button.g{background:#666}button.r{background:#b3261e}button.ok{background:#2e7d3
 .it.sel .ci{border-color:#222;transform:scale(1.12)}
 .it span{font-size:10.5px;font-weight:bold;color:#444;display:block;white-space:nowrap}
 
+/* आम पाठक को सिर्फ़ ❤️ और 🎲 */
+body:not(.owner) #tools.grid{grid-template-columns:repeat(2,1fr)}
+body:not(.owner) #tools .it:nth-child(1),
+body:not(.owner) #tools .it:nth-child(2),
+body:not(.owner) #tools .it:nth-child(3),
+body:not(.owner) #tools .it:nth-child(6){display:none}
+
 /* मोड पट्टी */
 #mb{display:none;text-align:center;font-weight:bold;padding:10px;border-radius:12px;margin:8px 0;color:#fff;animation:pop .3s}
 #mb.edit{display:block;background:#1565c0}#mb.del{display:block;background:#b3261e}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
 
 /* किताब जैसे कार्ड */
-.c{position:relative;background:#fffdf7;border-radius:4px 14px 14px 4px;border-left:12px solid #7a3b12;padding:14px 46px 14px 14px;margin:12px 0;box-shadow:2px 3px 8px rgba(0,0,0,.15);animation:rise .4s both}
+.c{position:relative;background:#fffdf7;border-radius:4px 14px 14px 4px;border-left:12px solid #7a3b12;padding:14px 46px 14px 14px;margin:12px 0;box-shadow:2px 3px 8px rgba(0,0,0,.15);animation:rise .4s both;cursor:pointer}
 @keyframes rise{from{transform:translateY(16px);opacity:0}}
 .c h3{margin:0 0 6px;font-size:18px}.c p{margin:0;color:#555;font-size:14px}
 .c .hr{position:absolute;right:8px;top:8px;font-size:22px;background:none;padding:2px;margin:0}
@@ -50,14 +64,16 @@ body.del .c{animation:shake .5s infinite}
 .empty{text-align:center;color:#777;padding:30px 10px;font-size:17px}
 
 /* पढ़ना */
-.book{background:#fffdf7;color:#222;border-radius:6px 16px 16px 6px;border-left:14px solid #7a3b12;box-shadow:3px 5px 14px rgba(0,0,0,.25);padding:18px;min-height:60vh;margin:10px 0;transform-origin:left center;animation:flip .45s}
+.book{position:relative;overflow:hidden;background-color:#fffdf7;color:#222;border-radius:6px 16px 16px 6px;border-left:14px solid #7a3b12;box-shadow:3px 5px 14px rgba(0,0,0,.25);padding:18px;min-height:60vh;margin:10px 0;transform-origin:left center;animation:flip .45s;
+background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='170'><text x='12' y='95' font-size='20' fill='%23000' fill-opacity='0.055' transform='rotate(-25 120 85)' font-family='sans-serif'>📚 कहानी पुस्तकालय</text></svg>")}
 @keyframes flip{from{transform:perspective(900px) rotateY(-60deg);opacity:.2}}
 .cover{background:linear-gradient(160deg,#7a3b12,#3d1c08);color:#f6d98a;text-align:center;border-radius:6px 16px 16px 6px;padding:30px 14px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:10px 0;box-shadow:3px 5px 14px rgba(0,0,0,.35);animation:flip .45s}
 .cover h2{font-size:28px;margin:16px 0 8px;line-height:1.4}
-.cover .logo{width:90px;height:90px}
-#t{line-height:1.9;white-space:pre-wrap;font-size:20px;word-wrap:break-word}
-#read.night .book{background:#1b1b1f;color:#ddd;border-left-color:#555}
+.cover .logo{width:90px;height:90px;cursor:default}
+#t{line-height:1.9;white-space:pre-wrap;font-size:20px;word-wrap:break-word;-webkit-touch-callout:none}
+#read.night .book{background-color:#1b1b1f;background-image:none;color:#ddd;border-left-color:#555}
 .ctr{text-align:center}
+.rights{text-align:center;color:#888;font-size:12px;margin:26px 0 8px}
 
 /* बैकअप विंडो, टोस्ट, बौछार */
 #md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;align-items:center;justify-content:center;padding:16px}
@@ -66,9 +82,12 @@ body.del .c{animation:shake .5s infinite}
 #toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:99;max-width:90%;text-align:center}
 .cf{position:fixed;top:-30px;font-size:26px;z-index:100;pointer-events:none;animation:fall 1.8s linear forwards}
 @keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.4}}
+
+@media print{body{display:none!important}}
 </style>
 </head>
 <body>
+
 <div class="top"><a href="index.html" class="nav">🏠 होम</a></div>
 <div id="prog"></div>
 <div id="toast"></div>
@@ -77,7 +96,7 @@ body.del .c{animation:shake .5s infinite}
 
 <!-- मुख्य पेज -->
 <div id="home" class="v on">
-  <img class="logo" src="logo.png" alt="" onerror="this.style.visibility='hidden'">
+  <img class="logo" id="logoImg" src="logo.png" alt="" onerror="this.style.visibility='hidden'">
   <h1>📚 मेरा कहानी पुस्तकालय</h1>
   <p class="sub" id="gr"></p>
   <input id="q" placeholder="🔍 कहानी खोजें...">
@@ -94,7 +113,7 @@ body.del .c{animation:shake .5s infinite}
   <div class="ctr"><button id="m">और दिखाएँ ⬇</button></div>
 </div>
 
-<!-- लिखें / संपादित -->
+<!-- लिखें / संपादित (सिर्फ़ मालिक) -->
 <div id="write" class="v">
   <h1 id="wh">✍️ नई कहानी</h1>
   <input id="wt" placeholder="📖 कहानी का शीर्षक">
@@ -104,7 +123,7 @@ body.del .c{animation:shake .5s infinite}
     <option>राजनीतिक</option><option>सामाजिक</option><option>जीवन</option>
     <option>प्रेम</option><option>विज्ञान</option><option>हास्य</option><option>रहस्य</option>
   </select>
-  <textarea id="wx" rows="14" placeholder="यहाँ कहानी कॉपी-पेस्ट करें..." oninput="wc()"></textarea>
+  <textarea id="wx" rows="14" placeholder="यहाँ कहानी कॉपी-पेस्ट करें..." oninput="wcount()"></textarea>
   <p id="wcnt" class="sub"></p>
   <div class="ctr">
     <button class="ok" onclick="save()">💾 सेव करें</button>
@@ -131,9 +150,10 @@ body.del .c{animation:shake .5s infinite}
   </div>
 </div>
 
+<div class="rights">© सर्वाधिकार सुरक्षित · बिना अनुमति नकल या पुनः प्रकाशन वर्जित</div>
 </div>
 
-<!-- बैकअप विंडो -->
+<!-- बैकअप (सिर्फ़ मालिक) -->
 <div id="md"><div class="bx">
   <h3 style="margin-top:0">💾 बैकअप</h3>
   <p style="font-size:13px;color:#555">आपकी नई/बदली कहानियाँ इसी फ़ोन के ब्राउज़र में रहती हैं। डेटा साफ़ करने से पहले बैकअप कॉपी करके कहीं सेव कर लें।</p>
@@ -144,12 +164,45 @@ body.del .c{animation:shake .5s infinite}
 </div></div>
 
 <script>
+/* ================= सेटिंग (यहीं से बदलें) ================= */
+const OWNER_PASS = "ChangeMe@123";     // ← इसे ज़रूर बदलें
+const MAX_LINES  = 6;                  // कॉपी में अधिकतम लाइन
+const MAX_CHARS  = 350;                // कॉपी में अधिकतम अक्षर
+const MAX_COPIES = 3;                  // इतने समय में अधिकतम कॉपी
+const WINDOW_MS  = 10*60*1000;         // 10 मिनट
+const SITE = location.origin + location.pathname.replace(/[^\/]*$/, "");
+
 const $=i=>document.getElementById(i);
 let A=[],F=[],shown=0,P=[],pi=0,cur=null,curList=[],tok=0,C="",mode="",favOnly=false,editId=null,editBase=null;
 let fs=+localStorage.fs||20;const PS=1200;
 let FAV=new Set(JSON.parse(localStorage.fav||"[]"));
 
-/* ---------- IndexedDB ---------- */
+/* ================= मालिक मोड ================= */
+const isOwner=()=>document.body.classList.contains("owner");
+function setOwner(on){
+  localStorage.owner=on?"1":"0";
+  document.body.classList.toggle("owner",on);
+  if(!on){mode="";document.body.classList.remove("del");$("mb").className="";$("mb").textContent=""}
+  if(typeof drawBtns==="function")drawBtns();
+}
+const isLocal=["localhost","127.0.0.1"].includes(location.hostname);
+document.body.classList.toggle("owner",isLocal||localStorage.owner==="1");
+
+let taps=0,tapT;
+$("logoImg").addEventListener("click",()=>{
+  taps++;clearTimeout(tapT);tapT=setTimeout(()=>taps=0,1500);
+  if(taps>=5){
+    taps=0;
+    if(isOwner()){setOwner(false);toast("🔒 मालिक मोड बंद")}
+    else{
+      const p=prompt("🔑 पासवर्ड डालें:");
+      if(p===OWNER_PASS){setOwner(true);toast("🔓 मालिक मोड चालू")}
+      else if(p!==null)toast("❌ गलत पासवर्ड");
+    }
+  }
+});
+
+/* ================= IndexedDB (नई/बदली कहानियाँ) ================= */
 const idb=new Promise((ok,no)=>{
   const r=indexedDB.open("kosh",1);
   r.onupgradeneeded=()=>r.result.createObjectStore("s",{keyPath:"id"});
@@ -163,9 +216,9 @@ const dbAll=()=>tx("readonly",s=>s.getAll());
 const dbPut=o=>tx("readwrite",s=>s.put(o));
 const dbDel=id=>tx("readwrite",s=>s.delete(id));
 
-function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",2200)}
-function boom(em){
-  const E=em||["🎉","✨","📚","🌟","💖","🎊"];
+function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",2300)}
+function boom(){
+  const E=["🎉","✨","📚","🌟","💖","🎊"];
   for(let i=0;i<30;i++){
     const s=document.createElement("span");s.className="cf";
     s.textContent=E[i%E.length];s.style.left=Math.random()*96+"vw";
@@ -174,7 +227,19 @@ function boom(em){
   }
 }
 
-/* ---------- लोड ---------- */
+/* ================= कहानियाँ लोड + Base64 डिकोड ================= */
+function dec(b){
+  const s=b.trim();
+  if(!/^[A-Za-z0-9+\/=\s]+$/.test(s))return b;          // पहले से सादा टेक्स्ट
+  try{return new TextDecoder().decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)))}
+  catch(e){return b}
+}
+async function getText(s){
+  if(s.text!=null)return s.text;                        // फ़ोन में लिखी कहानी
+  const r=await fetch("data/s/"+s.id+".txt");
+  if(!r.ok)throw new Error("fetch");
+  return dec(await r.text());
+}
 async function load(){
   let base=[];
   try{base=await(await fetch("data/index.json")).json()}catch(e){}
@@ -184,12 +249,8 @@ async function load(){
   A=[...m.values()].filter(s=>!s.del).sort((a,b)=>(b.ts||0)-(a.ts||0));
   filt();
 }
-async function getText(s){
-  if(s.text!=null)return s.text;
-  return await(await fetch("data/s/"+s.id+".txt")).text();
-}
 
-/* ---------- गोल बटन ---------- */
+/* ================= गोल बटन ================= */
 const CATS=[["","📚","सभी","#555"],["राजनीतिक","🏛️","राजनीतिक","#c62828"],["सामाजिक","👥","सामाजिक","#2e7d32"],["जीवन","🌅","जीवन","#ef6c00"],["प्रेम","💖","प्रेम","#ad1457"],["विज्ञान","🪐","विज्ञान","#1565c0"],["हास्य","🎭","हास्य","#6a1b9a"],["रहस्य","🕵️","रहस्य","#00695c"]];
 const EMO={"राजनीतिक":"🏛️","सामाजिक":"👥","जीवन":"🌅","प्रेम":"💖","विज्ञान":"🪐","हास्य":"🎭","रहस्य":"🕵️"};
 const TOOLS=[
@@ -198,7 +259,7 @@ const TOOLS=[
  ["del","🗑️","मिटाएँ","#b3261e",()=>setMode("del")],
  ["fav","❤️","पसंद","#d81b60",()=>{favOnly=!favOnly;drawBtns();filt()}],
  ["rnd","🎲","कोई भी","#6a1b9a",()=>randomStory()],
- ["bak","💾","बैकअप","#455a64",()=>$("md").classList.add("on")]
+ ["bak","💾","बैकअप","#455a64",()=>{if(isOwner())$("md").classList.add("on")}]
 ];
 function btn(parent,ic,nm,col,on,fn){
   const d=document.createElement("div");d.className="it"+(on?" sel":"");
@@ -212,25 +273,28 @@ function drawBtns(){
   TOOLS.forEach(([k,ic,nm,col,fn])=>btn($("tools"),ic,nm,col,(mode===k)||(k==="fav"&&favOnly),fn));
 }
 function setMode(m){
+  if(!isOwner())return;
   mode=(mode===m)?"":m;
   document.body.classList.toggle("del",mode==="del");
   const b=$("mb");b.className=mode;
-  b.textContent=mode==="edit"?"✏️ किस कहानी को बदलना है? उसे छुएँ (फिर से ✏️ दबाकर बंद करें)":mode==="del"?"🗑️ किसे मिटाना है? उसे छुएँ (फिर से 🗑️ दबाकर बंद करें)":"";
+  b.textContent=mode==="edit"?"✏️ किस कहानी को बदलना है? उसे छुएँ (बंद करने के लिए फिर ✏️ दबाएँ)":mode==="del"?"🗑️ किसे मिटाना है? उसे छुएँ (बंद करने के लिए फिर 🗑️ दबाएँ)":"";
   drawBtns();
 }
 
-/* ---------- सूची ---------- */
+/* ================= सूची ================= */
 const SPINE=["#7a3b12","#1565c0","#2e7d32","#ad1457","#6a1b9a","#00695c","#ef6c00","#c62828"];
 function filt(){
   const q=$("q").value.trim();
   F=A.filter(s=>{
     const t=s.t+(s.p||"");
-    return t.includes(q)&&(!C||s.c===C)&&(!favOnly||FAV.has(s.id));
+    const catOk=!C||s.c===C||(!s.c&&t.includes(C));
+    return t.includes(q)&&catOk&&(!favOnly||FAV.has(s.id));
   });
-  $("gr").textContent=(new Date().getHours()<12?"सुप्रभात ☀️ ":new Date().getHours()<17?"नमस्कार 🙏 ":"शुभ संध्या 🌙 ")+"· "+F.length+" कहानियाँ";
+  const h=new Date().getHours();
+  $("gr").textContent=(h<12?"सुप्रभात ☀️ ":h<17?"नमस्कार 🙏 ":h<21?"शुभ संध्या 🌆 ":"शुभ रात्रि 🌙 ")+"· "+F.length+" कहानियाँ";
   shown=0;$("o").innerHTML="";
   if(!F.length){
-    $("o").innerHTML='<div class="empty">😕 कोई कहानी नहीं मिली<br><small>'+(C?"इस कैटेगरी में अभी कुछ नहीं है। ✍️ से लिखिए!":"✍️ दबाकर पहली कहानी जोड़िए")+'</small></div>';
+    $("o").innerHTML='<div class="empty">😕 कोई कहानी नहीं मिली<br><small>'+(favOnly?"अभी कोई पसंदीदा नहीं है — कार्ड पर 🤍 दबाइए":C?"इस कैटेगरी में अभी कुछ नहीं है":"अभी कोई कहानी नहीं है")+'</small></div>';
   }
   more();
 }
@@ -245,8 +309,8 @@ function more(){
     const h=c.children[2];h.textContent=FAV.has(s.id)?"❤️":"🤍";
     h.onclick=e=>{e.stopPropagation();FAV.has(s.id)?FAV.delete(s.id):FAV.add(s.id);localStorage.fav=JSON.stringify([...FAV]);h.textContent=FAV.has(s.id)?"❤️":"🤍";if(favOnly)filt()};
     c.onclick=()=>{
-      if(mode==="edit")editStory(s);
-      else if(mode==="del")delStory(s);
+      if(mode==="edit"&&isOwner())editStory(s);
+      else if(mode==="del"&&isOwner())delStory(s);
       else op(s,F);
     };
     $("o").append(c);
@@ -269,35 +333,40 @@ function randomStory(){
   toast("🎲 आज की कहानी: "+s.t);op(s,L);
 }
 
-/* ---------- लिखना / संपादन / हटाना ---------- */
-function wc(){
+/* ================= लिखना / बदलना / मिटाना (मालिक) ================= */
+function wcount(){
   const n=$("wx").value.trim().split(/\s+/).filter(Boolean).length;
   $("wcnt").textContent=n?("📝 "+n+" शब्द · ⏱️ ~"+Math.max(1,Math.round(n/150))+" मिनट"):"";
 }
 function clearForm(){
   $("wt").value="";$("wx").value="";$("wc").value="";
   $("wa").value=localStorage.author||"";
-  editId=null;editBase=null;$("wh").textContent="✍️ नई कहानी";wc();
+  editId=null;editBase=null;$("wh").textContent="✍️ नई कहानी";wcount();
 }
-function newStory(){clearForm();view("write")}
+function newStory(){if(!isOwner())return;clearForm();view("write")}
 async function editStory(s){
-  const t=await getText(s);
-  editId=s.id;editBase=s;
-  $("wh").textContent="✏️ कहानी बदलिए";
-  $("wt").value=s.t;$("wx").value=t;$("wc").value=s.c||"";$("wa").value=s.a||localStorage.author||"";wc();
-  view("write");
+  if(!isOwner())return;
+  try{
+    const t=await getText(s);
+    editId=s.id;editBase=s;
+    $("wh").textContent="✏️ कहानी बदलिए";
+    $("wt").value=s.t;$("wx").value=t;$("wc").value=s.c||"";$("wa").value=s.a||localStorage.author||"";wcount();
+    view("write");
+  }catch(e){toast("⚠️ कहानी खुल नहीं पाई")}
 }
 async function save(){
+  if(!isOwner())return;
   const t=$("wt").value.trim(),x=$("wx").value.trim();
   if(!t||!x){toast("⚠️ शीर्षक और कहानी दोनों भरें");return}
   const a=$("wa").value.trim();if(a)localStorage.author=a;
-  const o={id:editId||("u"+Date.now()),t,a,c:$("wc").value,text:x,p:x.replace(/\s+/g," ").slice(0,80)};
+  const o={id:editId||("u"+Date.now()),t,a,c:$("wc").value,text:x,p:x.replace(/\s+/g," ").slice(0,120)};
   if(editId){if(editBase&&editBase.ts)o.ts=editBase.ts}else o.ts=Date.now();
   await dbPut(o);
   clearForm();await load();view("home");
   toast("✅ कहानी सेव हो गई!");boom();
 }
 async function delStory(s){
+  if(!isOwner())return;
   if(!confirm("😮 क्या सच में '"+s.t+"' मिटानी है?"))return;
   if(String(s.id).startsWith("u"))await dbDel(s.id);
   else await dbPut({id:s.id,t:s.t,del:true});
@@ -305,13 +374,15 @@ async function delStory(s){
   toast("🗑️ कहानी मिट गई");await load();
 }
 
-/* ---------- बैकअप ---------- */
+/* ================= बैकअप ================= */
 async function bk(){
+  if(!isOwner())return;
   const d=JSON.stringify(await dbAll());
   try{await navigator.clipboard.writeText(d);toast("📋 कॉपी हो गया — कहीं सेव कर लें")}
   catch(e){$("bx").value=d;$("bx").select();toast("नीचे के बॉक्स से कॉपी करें")}
 }
 async function rs(){
+  if(!isOwner())return;
   try{
     const d=JSON.parse($("bx").value);
     for(const o of d)await dbPut(o);
@@ -319,10 +390,11 @@ async function rs(){
   }catch(e){toast("⚠️ बैकअप सही नहीं है")}
 }
 
-/* ---------- पढ़ना ---------- */
+/* ================= पढ़ना (बुक) ================= */
 async function op(s,list){
+  let t;
+  try{t=await getText(s)}catch(e){toast("⚠️ कहानी लोड नहीं हो पाई");return}
   cur=s;curList=list||A;
-  const t=await getText(s);
   cur._min=Math.max(1,Math.round(t.length/900));
   P=[null];
   for(let i=0;i<t.length;){
@@ -345,7 +417,7 @@ function show(){
   const n=document.createElement("div");
   if(pi===0){
     n.className="cover";
-    n.innerHTML='<img class="logo" src="logo.png" onerror="this.style.visibility=\'hidden\'"><h2></h2><div></div><p></p>';
+    n.innerHTML='<img class="logo" src="logo.png" alt="" onerror="this.style.visibility=\'hidden\'"><h2></h2><div></div><p></p>';
     n.children[1].textContent=cur.t;
     n.children[2].textContent=cur.a?("— "+cur.a):"";
     n.children[3].style.cssText="margin-top:26px;font-size:13px";
@@ -391,11 +463,45 @@ $("bk").addEventListener("touchend",e=>{
   if(Math.abs(dx)>70)go(dx<0?1:-1);
 });
 
-clearForm();drawBtns();load();
-</script>
-</body><script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
+/* ================= कॉपी-सुरक्षा ================= */
+const inField=()=>["INPUT","TEXTAREA"].includes((document.activeElement||{}).tagName);
+
+document.addEventListener("copy",e=>{
+  if(isOwner()||inField())return;
+  const sel=String(getSelection());
+  if(!sel.trim())return;
+  e.preventDefault();
+
+  const now=Date.now();
+  let log=[];
+  try{log=JSON.parse(localStorage.cl||"[]").filter(t=>now-t<WINDOW_MS)}catch(_){}
+  let out;
+  if(log.length>=MAX_COPIES){
+    out="📚 पूरी कहानी पढ़ने के लिए वेबसाइट पर आइए: "+SITE;
+    toast("⛔ बार-बार कॉपी की अनुमति नहीं है");
+  }else{
+    log.push(now);
+    let t=sel.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0,MAX_LINES).join("\n");
+    if(t.length>MAX_CHARS)t=t.slice(0,MAX_CHARS).trim()+"…";
+    out=t+"\n\n📚 पूरी कहानी पढ़ें: "+SITE+(cur?"\n(कहानी: "+cur.t+")":"");
+    toast("✂️ सिर्फ़ "+MAX_LINES+" लाइन तक कॉपी होती है");
   }
+  localStorage.cl=JSON.stringify(log);
+  e.clipboardData.setData("text/plain",out);
+});
+document.addEventListener("cut",e=>{if(!isOwner()&&!inField())e.preventDefault()});
+document.addEventListener("dragstart",e=>{if(!isOwner())e.preventDefault()});
+document.addEventListener("contextmenu",e=>{
+  if(!isOwner()&&!inField()&&$("read").classList.contains("on"))e.preventDefault();
+});
+document.addEventListener("keydown",e=>{
+  if(isOwner()||inField())return;
+  if((e.ctrlKey||e.metaKey)&&["a","s","p","u"].includes(e.key.toLowerCase()))e.preventDefault();
+});
+
+/* ================= शुरुआत ================= */
+clearForm();drawBtns();load();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
+</body>
 </html>
