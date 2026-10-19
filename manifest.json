@@ -1,0 +1,15 @@
+{
+  "name": "मेरा कहानी पुस्तकालय",
+  "short_name": "कहानी पुस्तकालय",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f5f0e8",
+  "theme_color": "#7a3b12",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
