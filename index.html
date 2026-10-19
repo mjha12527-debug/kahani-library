@@ -1,96 +1,93 @@
-<!doctype html>
+<!<!doctype html>
 <html lang="hi">
-<head><link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="logo.png">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>स्वागत है - कहानी पुस्तकालय</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="logo.png">
     <style>
-        /* पेज का बैकग्राउंड और बीच में रखने का तरीका */
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f5f0e8; /* क्रीम रंग */
-            font-family: sans-serif;
-            color: #222;
-            padding: 20px;
-            box-sizing: border-box;
+        *{box-sizing:border-box}
+        html,body{max-width:100%;overflow-x:hidden}
+        body{
+            margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+            background:radial-gradient(circle at 20% 10%,#fff7e6,#f5f0e8 60%,#ecdcc4);
+            font-family:sans-serif;color:#222;padding:20px;position:relative;
         }
-        
-        /* सफ़ेद बॉक्स (कार्ड) */
-        .gate {
-            background: #fff;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
+        .gate{
+            position:relative;z-index:2;background:#fff;padding:26px 20px;border-radius:24px;
+            box-shadow:0 12px 28px rgba(0,0,0,.14);max-width:420px;width:100%;text-align:center;
+            animation:rise .7s both;
         }
-        
-        /* आपके लोगो की सेटिंग */
-        .logo-img {
-            width: 100%;
-            max-width: 280px;
-            height: auto;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        @keyframes rise{from{transform:translateY(30px);opacity:0}}
+        .logo-img{
+            width:170px;height:170px;object-fit:cover;border-radius:50%;
+            border:4px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.3);
+            margin-bottom:14px;animation:bob 3s ease-in-out infinite;
         }
-        
-        /* टाइटल और टेक्स्ट */
-        h1 {
-            color: #7a3b12;
-            margin: 0 0 10px 0;
-            font-size: 26px;
+        @keyframes bob{50%{transform:translateY(-8px)}}
+        .hello{color:#ef6c00;font-weight:bold;font-size:15px;margin:0 0 4px}
+        h1{color:#7a3b12;margin:0 0 8px;font-size:26px}
+        p{color:#555;margin:0 0 16px;font-size:16px;line-height:1.5}
+        .count{
+            display:inline-block;background:#fff3e0;color:#7a3b12;font-weight:bold;
+            padding:6px 14px;border-radius:20px;margin-bottom:18px;font-size:14px;
         }
-        p {
-            color: #555;
-            margin-bottom: 25px;
-            font-size: 16px;
-            line-height: 1.5;
+        .btn{
+            display:block;padding:15px 20px;font-size:18px;background:#7a3b12;color:#fff;
+            text-decoration:none;border-radius:14px;font-weight:bold;
+            animation:glow 2s infinite;
         }
-        
-        /* प्रवेश वाला बटन */
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            font-size: 18px;
-            background: #7a3b12;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            font-weight: bold;
-            border: none;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            background: #5a2a0d;
-        }
+        .btn:active{transform:scale(.96)}
+        @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(122,59,18,.5)}50%{box-shadow:0 0 0 12px rgba(122,59,18,0)}}
+        .priv{margin-top:16px;font-size:14px}
+        .priv a{color:#7a3b12;text-decoration:none}
+        /* तैरते इमोजी */
+        .fl{position:fixed;bottom:-40px;font-size:26px;opacity:.7;z-index:1;pointer-events:none;animation:up linear infinite}
+        @keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
     </style>
 </head>
 <body>
     <div class="gate">
-        
-        <!-- आपका लोगो यहाँ लगा है -->
         <img src="logo.png" class="logo-img" alt="कहानी पुस्तकालय लोगो">
-        
-        <!-- टाइटल और जानकारी -->
+        <p class="hello" id="hello"></p>
         <h1>📚 कहानी पुस्तकालय</h1>
         <p>यहाँ आपको मिलेंगी रोचक, प्रेरणादायक और मनोरंजक कहानियाँ।</p>
-        
-        <!-- लाइब्रेरी में जाने का बटन -->
+        <div class="count" id="cnt" style="display:none"></div>
         <a href="library.html" class="btn">पुस्तकालय में प्रवेश करें ➔</a>
-        <p style="margin-top: 20px; font-size: 14px;"><a href="privacy.html" style="color: #7a3b12; text-decoration: none;">🔒 गोपनीयता नीति (Privacy Policy)</a></p>
+        <p class="priv">
+            <a href="privacy.html">🔒 गोपनीयता नीति (Privacy Policy)</a>
+        </p>
     </div>
-</body><script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
+
+    <script>
+        // दिन के हिसाब से अभिवादन
+        var h = new Date().getHours();
+        document.getElementById("hello").textContent =
+            h < 12 ? "सुप्रभात ☀️" : h < 17 ? "नमस्कार 🙏" : h < 21 ? "शुभ संध्या 🌆" : "शुभ रात्रि 🌙";
+
+        // कहानियों की गिनती
+        fetch("data/index.json").then(function(r){return r.json()}).then(function(d){
+            var c = document.getElementById("cnt");
+            c.textContent = "📖 " + d.length + " कहानियाँ आपका इंतज़ार कर रही हैं";
+            c.style.display = "inline-block";
+        }).catch(function(){});
+
+        // तैरते इमोजी
+        var E = ["📖","✒️","📚","✨","🕮","🖋️","🌟"];
+        for (var i = 0; i < 12; i++) {
+            var s = document.createElement("span");
+            s.className = "fl";
+            s.textContent = E[i % E.length];
+            s.style.left = (Math.random() * 94) + "vw";
+            s.style.animationDuration = (9 + Math.random() * 9) + "s";
+            s.style.animationDelay = (Math.random() * 8) + "s";
+            document.body.appendChild(s);
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
 </html>
