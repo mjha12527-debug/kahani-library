@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>मेरा कहानी पुस्तकालय</title>
 
-<!-- सुरक्षा -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <script>if(window.top!==window.self){window.top.location=window.self.location}</script>
@@ -16,8 +15,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;max-width:100%;overflow-x:hidden}
 body{background:#f5f0e8;font-family:sans-serif;color:#222;padding-top:56px}
-.top{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12);display:flex;align-items:center;padding:0 12px;z-index:60}
-.nav{background:#7a3b12;color:#fff;text-decoration:none;padding:8px 14px;border-radius:10px;font-size:15px;font-weight:bold}
+.top{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:60}
+.nav{background:#7a3b12;color:#fff;text-decoration:none;padding:8px 14px;border-radius:10px;font-size:15px;font-weight:bold;border:0;cursor:pointer;margin:0}
 #prog{position:fixed;top:56px;left:0;height:4px;background:#ef6c00;width:0;z-index:61;transition:width .3s}
 .w{max-width:700px;margin:auto;padding:14px}
 .v{display:none}.v.on{display:block}
@@ -31,7 +30,6 @@ button{padding:10px 14px;margin:3px;font-size:15px;border:0;border-radius:10px;b
 button:active{transform:scale(.95)}
 button.g{background:#666}button.r{background:#b3261e}button.ok{background:#2e7d32}
 
-/* गोल बटनों का डिब्बा */
 .panel{background:#fff;border-radius:18px;padding:10px 6px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .lbl{font-size:12px;color:#888;font-weight:bold;margin:2px 10px}
 .grid{display:grid;gap:8px 2px;padding:6px 0}
@@ -42,19 +40,16 @@ button.g{background:#666}button.r{background:#b3261e}button.ok{background:#2e7d3
 .it.sel .ci{border-color:#222;transform:scale(1.12)}
 .it span{font-size:10.5px;font-weight:bold;color:#444;display:block;white-space:nowrap}
 
-/* आम पाठक को सिर्फ़ ❤️ और 🎲 */
 body:not(.owner) #tools.grid{grid-template-columns:repeat(2,1fr)}
 body:not(.owner) #tools .it:nth-child(1),
 body:not(.owner) #tools .it:nth-child(2),
 body:not(.owner) #tools .it:nth-child(3),
 body:not(.owner) #tools .it:nth-child(6){display:none}
 
-/* मोड पट्टी */
 #mb{display:none;text-align:center;font-weight:bold;padding:10px;border-radius:12px;margin:8px 0;color:#fff;animation:pop .3s}
 #mb.edit{display:block;background:#1565c0}#mb.del{display:block;background:#b3261e}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
 
-/* किताब जैसे कार्ड */
 .c{position:relative;background:#fffdf7;border-radius:4px 14px 14px 4px;border-left:12px solid #7a3b12;padding:14px 46px 14px 14px;margin:12px 0;box-shadow:2px 3px 8px rgba(0,0,0,.15);animation:rise .4s both;cursor:pointer}
 @keyframes rise{from{transform:translateY(16px);opacity:0}}
 .c h3{margin:0 0 6px;font-size:18px}.c p{margin:0;color:#555;font-size:14px}
@@ -63,7 +58,6 @@ body.del .c{animation:shake .5s infinite}
 @keyframes shake{25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
 .empty{text-align:center;color:#777;padding:30px 10px;font-size:17px}
 
-/* पढ़ना */
 .book{position:relative;overflow:hidden;background-color:#fffdf7;color:#222;border-radius:6px 16px 16px 6px;border-left:14px solid #7a3b12;box-shadow:3px 5px 14px rgba(0,0,0,.25);padding:18px;min-height:60vh;margin:10px 0;transform-origin:left center;animation:flip .45s;
 background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='170'><text x='12' y='95' font-size='20' fill='%23000' fill-opacity='0.055' transform='rotate(-25 120 85)' font-family='sans-serif'>📚 कहानी पुस्तकालय</text></svg>")}
 @keyframes flip{from{transform:perspective(900px) rotateY(-60deg);opacity:.2}}
@@ -75,7 +69,6 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 .ctr{text-align:center}
 .rights{text-align:center;color:#888;font-size:12px;margin:26px 0 8px}
 
-/* बैकअप विंडो, टोस्ट, बौछार */
 #md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;align-items:center;justify-content:center;padding:16px}
 #md.on{display:flex}
 #md .bx{background:#fff;border-radius:18px;padding:16px;width:100%;max-width:500px}
@@ -88,7 +81,10 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 </head>
 <body>
 
-<div class="top"><a href="index.html" class="nav">🏠 होम</a></div>
+<div class="top">
+  <a href="index.html" class="nav">🏠 होम</a>
+  <button id="lock" class="nav" onclick="ownerLogin()">🔐</button>
+</div>
 <div id="prog"></div>
 <div id="toast"></div>
 
@@ -113,7 +109,7 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
   <div class="ctr"><button id="m">और दिखाएँ ⬇</button></div>
 </div>
 
-<!-- लिखें / संपादित (सिर्फ़ मालिक) -->
+<!-- लिखें / बदलें (सिर्फ़ मालिक) -->
 <div id="write" class="v">
   <h1 id="wh">✍️ नई कहानी</h1>
   <input id="wt" placeholder="📖 कहानी का शीर्षक">
@@ -165,11 +161,11 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 
 <script>
 /* ================= सेटिंग (यहीं से बदलें) ================= */
-const OWNER_PASS = "ChangeMe@123";     // ← इसे ज़रूर बदलें
-const MAX_LINES  = 6;                  // कॉपी में अधिकतम लाइन
-const MAX_CHARS  = 350;                // कॉपी में अधिकतम अक्षर
-const MAX_COPIES = 3;                  // इतने समय में अधिकतम कॉपी
-const WINDOW_MS  = 10*60*1000;         // 10 मिनट
+const OWNER_PASS = "ChangeMe@123";     // ← अपना पासवर्ड यहाँ लिखें (स्पेस न रखें)
+const MAX_LINES  = 6;
+const MAX_CHARS  = 350;
+const MAX_COPIES = 3;
+const WINDOW_MS  = 10*60*1000;
 const SITE = location.origin + location.pathname.replace(/[^\/]*$/, "");
 
 const $=i=>document.getElementById(i);
@@ -182,27 +178,31 @@ const isOwner=()=>document.body.classList.contains("owner");
 function setOwner(on){
   localStorage.owner=on?"1":"0";
   document.body.classList.toggle("owner",on);
+  $("lock").textContent=on?"🔓":"🔐";
   if(!on){mode="";document.body.classList.remove("del");$("mb").className="";$("mb").textContent=""}
   if(typeof drawBtns==="function")drawBtns();
 }
+function ownerLogin(){
+  if(isOwner()){
+    if(confirm("मालिक मोड बंद करें?")){setOwner(false);toast("🔒 मालिक मोड बंद")}
+    return;
+  }
+  const p=prompt("🔑 पासवर्ड डालें:");
+  if(p===null)return;
+  if(p.trim()===OWNER_PASS){setOwner(true);toast("🔓 मालिक मोड चालू")}
+  else toast("❌ गलत पासवर्ड");
+}
 const isLocal=["localhost","127.0.0.1"].includes(location.hostname);
 document.body.classList.toggle("owner",isLocal||localStorage.owner==="1");
+$("lock").textContent=isOwner()?"🔓":"🔐";
 
 let taps=0,tapT;
 $("logoImg").addEventListener("click",()=>{
-  taps++;clearTimeout(tapT);tapT=setTimeout(()=>taps=0,1500);
-  if(taps>=5){
-    taps=0;
-    if(isOwner()){setOwner(false);toast("🔒 मालिक मोड बंद")}
-    else{
-      const p=prompt("🔑 पासवर्ड डालें:");
-      if(p===OWNER_PASS){setOwner(true);toast("🔓 मालिक मोड चालू")}
-      else if(p!==null)toast("❌ गलत पासवर्ड");
-    }
-  }
+  taps++;clearTimeout(tapT);tapT=setTimeout(()=>taps=0,2500);
+  if(taps>=3){taps=0;ownerLogin()}
 });
 
-/* ================= IndexedDB (नई/बदली कहानियाँ) ================= */
+/* ================= IndexedDB ================= */
 const idb=new Promise((ok,no)=>{
   const r=indexedDB.open("kosh",1);
   r.onupgradeneeded=()=>r.result.createObjectStore("s",{keyPath:"id"});
@@ -230,12 +230,12 @@ function boom(){
 /* ================= कहानियाँ लोड + Base64 डिकोड ================= */
 function dec(b){
   const s=b.trim();
-  if(!/^[A-Za-z0-9+\/=\s]+$/.test(s))return b;          // पहले से सादा टेक्स्ट
+  if(!/^[A-Za-z0-9+\/=\s]+$/.test(s))return b;
   try{return new TextDecoder().decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)))}
   catch(e){return b}
 }
 async function getText(s){
-  if(s.text!=null)return s.text;                        // फ़ोन में लिखी कहानी
+  if(s.text!=null)return s.text;
   const r=await fetch("data/s/"+s.id+".txt");
   if(!r.ok)throw new Error("fetch");
   return dec(await r.text());
@@ -333,7 +333,7 @@ function randomStory(){
   toast("🎲 आज की कहानी: "+s.t);op(s,L);
 }
 
-/* ================= लिखना / बदलना / मिटाना (मालिक) ================= */
+/* ================= लिखना / बदलना / मिटाना ================= */
 function wcount(){
   const n=$("wx").value.trim().split(/\s+/).filter(Boolean).length;
   $("wcnt").textContent=n?("📝 "+n+" शब्द · ⏱️ ~"+Math.max(1,Math.round(n/150))+" मिनट"):"";
