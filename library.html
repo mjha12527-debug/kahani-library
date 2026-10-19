@@ -1,38 +1,166 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>मेरा कहानी पुस्तकालय</title>
-<style>
-body{margin:0;background:#f5f0e8;font-family:sans-serif;color:#222}
-.w{max-width:700px;margin:auto;padding:20px}
-h1{color:#7a3b12}
-input{width:100%;padding:14px;border:1px solid #444;box-sizing:border-box;font-size:16px}
-.c{background:#fff;border-radius:14px;padding:16px;margin:12px 0}
-.c h3{margin:0 0 6px}.c p{margin:0;color:#555}
-button{padding:10px 14px;margin:4px;font-size:16px;border:0;border-radius:8px;background:#7a3b12;color:#fff}
-#r{display:none}#t{line-height:1.9;white-space:pre-wrap}
-</style></head><body><div class="w">
-<div id="l"><h1>📚 मेरा कहानी पुस्तकालय</h1><p id="n"></p>
-<input id="q" placeholder="कहानी खोजें..."><div id="o"></div>
-<button id="m">और दिखाएँ</button></div>
-<div id="r"><button onclick="back()">⬅ वापस</button>
-<button onclick="sz(2)">A+</button><button onclick="sz(-2)">A-</button>
-<button onclick="say()">🔊 सुनें</button>
-<h2 id="rt"></h2><div id="t"></div><p id="pg"></p>
-<button onclick="go(-1)">◀ पिछला</button><button onclick="go(1)">अगला ▶</button></div>
-</div>
-<script>
-let A=[],F=[],shown=0,P=[],pi=0,cur=null,tok=0,fs=+localStorage.fs||20;
-const $=i=>document.getElementById(i),PS=1500;
-fetch("data/index.json").then(r=>r.json()).then(d=>{A=d;$("n").textContent=d.length+" कहानियाँ";filt()});
-function filt(){const q=$("q").value.trim();F=A.filter(s=>(s.t+s.p).includes(q));shown=0;$("o").innerHTML="";more()}
-function more(){F.slice(shown,shown+30).forEach(s=>{const c=document.createElement("div");c.className="c";c.innerHTML="<h3></h3><p></p>";c.children[0].textContent=s.t;c.children[1].textContent=s.p+"…";c.onclick=()=>op(s);$("o").append(c)});shown+=30;$("m").style.display=shown<F.length?"":"none"}
-$("q").oninput=filt;$("m").onclick=more;
-async function op(s){cur=s;const t=await(await fetch("data/s/"+s.id+".txt")).text();P=[];
-for(let i=0;i<t.length;){let e=Math.min(i+PS,t.length);if(e<t.length){const b=Math.max(t.lastIndexOf("।",e),t.lastIndexOf("\n",e));if(b>i+PS/2)e=b+1}P.push(t.slice(i,e).trim());i=e}
-pi=+localStorage["p"+s.id]||0;$("l").style.display="none";$("r").style.display="block";$("rt").textContent=s.t;show()}
-function show(){tok++;speechSynthesis.cancel();$("t").textContent=P[pi];$("t").style.fontSize=fs+"px";$("pg").textContent="पृष्ठ "+(pi+1)+" / "+P.length;localStorage["p"+cur.id]=pi;scrollTo(0,0)}
-function go(d){pi=Math.max(0,Math.min(P.length-1,pi+d));show()}
-function sz(d){fs+=d;localStorage.fs=fs;$("t").style.fontSize=fs+"px"}
-function back(){tok++;speechSynthesis.cancel();$("r").style.display="none";$("l").style.display="block"}
-function say(){speechSynthesis.cancel();const my=++tok,u=new SpeechSynthesisUtterance(P[pi]);u.lang="hi-IN";u.onend=()=>{if(my===tok&&pi<P.length-1){pi++;show();say()}};speechSynthesis.speak(u)}
-</script></body></html>
+<!doctype html>
+<html lang="hi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>मेरा कहानी पुस्तकालय</title>
+    <style>
+        body{margin:0;background:#f5f0e8;font-family:sans-serif;color:#222}
+        .w{max-width:700px;margin:auto;padding:20px}
+        h1{color:#7a3b12; text-align:center; margin-top:0;}
+        .logo-header{text-align:center; margin-bottom: 10px;}
+        .logo-header img{width: 110px; height: 110px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
+        input{width:100%;padding:14px;border:1px solid #444;box-sizing:border-box;font-size:16px; border-radius:8px; margin-bottom:10px;}
+        .c{background:#fff;border-radius:14px;padding:16px;margin:12px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .c h3{margin:0 0 6px}.c p{margin:0;color:#555}
+        button{padding:10px 14px;margin:4px;font-size:16px;border:0;border-radius:8px;background:#7a3b12;color:#fff; cursor:pointer;}
+        
+        /* नई कैटेगरी के बटन का डिज़ाइन */
+        .cats{display:flex;overflow-x:auto;gap:10px;padding:10px 0;margin-bottom:10px;scrollbar-width:none}
+        .cat{text-align:center;cursor:pointer;min-width:65px}
+        .cat-icon{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 5px;color:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.2)}
+        .cat span{font-size:11px;font-weight:bold;color:#444}
+        .c1{background:#c62828}.c2{background:#2e7d32}.c3{background:#ef6c00}.c4{background:#ad1457}.c5{background:#1565c0}.c6{background:#6a1b9a}.c7{background:#00695c}.c0{background:#555}
+        
+        #r{display:none}#t{line-height:1.9;white-space:pre-wrap; font-size:20px;}
+    </style>
+</head>
+<body>
+    <div class="w">
+        <!-- मुख्य पेज (लाइब्रेरी) -->
+        <div id="l">
+            <div class="logo-header">
+                <img src="logo.png" alt="Logo">
+            </div>
+            <h1>📚 मेरा कहानी पुस्तकालय</h1>
+            <p id="n" style="text-align:center; color:#555; font-weight:bold;"></p>
+            
+            <input id="q" placeholder="कहानी खोजें...">
+            
+            <!-- नई कैटेगरी के बटन -->
+            <div class="cats">
+                <div class="cat" onclick="setCat('')"><div class="cat-icon c0">📚</div><span>सभी</span></div>
+                <div class="cat" onclick="setCat('राजनीतिक')"><div class="cat-icon c1">🏛️</div><span>राजनीतिक</span></div>
+                <div class="cat" onclick="setCat('सामाजिक')"><div class="cat-icon c2">👥</div><span>सामाजिक</span></div>
+                <div class="cat" onclick="setCat('जीवन')"><div class="cat-icon c3">🌅</div><span>जीवन</span></div>
+                <div class="cat" onclick="setCat('प्रेम')"><div class="cat-icon c4">💖</div><span>प्रेम</span></div>
+                <div class="cat" onclick="setCat('विज्ञान')"><div class="cat-icon c5">🪐</div><span>विज्ञान</span></div>
+                <div class="cat" onclick="setCat('हास्य')"><div class="cat-icon c6">🎭</div><span>हास्य</span></div>
+                <div class="cat" onclick="setCat('रहस्य')"><div class="cat-icon c7">🕵️</div><span>रहस्य</span></div>
+            </div>
+
+            <div id="o"></div>
+            <button id="m">और दिखाएँ</button>
+        </div>
+        
+        <!-- कहानी पढ़ने का पेज -->
+        <div id="r">
+            <button onclick="back()">⬅ वापस</button>
+            <button onclick="sz(2)">A+</button>
+            <button onclick="sz(-2)">A-</button>
+            <button onclick="say()">🔊 सुनें</button>
+            <h2 id="rt"></h2>
+            <div id="t"></div>
+            <p id="pg"></p>
+            <button onclick="go(-1)">◀ पिछला</button>
+            <button onclick="go(1)">अगला ▶</button>
+        </div>
+    </div>
+
+    <script>
+        let A=[],F=[],shown=0,P=[],pi=0,cur=null,tok=0,fs=+localStorage.fs||20;
+        const $=i=>document.getElementById(i),PS=1500;
+        
+        fetch("data/index.json").then(r=>r.json()).then(d=>{A=d;$("n").textContent=d.length+" कहानियाँ";filt()});
+        
+        function filt(){
+            const q=$("q").value.trim();
+            F=A.filter(s=>(s.t+s.p).includes(q));
+            shown=0;
+            $("o").innerHTML="";
+            more();
+        }
+        
+        // कैटेगरी पर क्लिक करने का फंक्शन
+        function setCat(c){
+            $("q").value = c;
+            filt();
+        }
+
+        function more(){
+            F.slice(shown,shown+30).forEach(s=>{
+                const c=document.createElement("div");
+                c.className="c";
+                c.innerHTML="<h3></h3><p></p>";
+                c.children[0].textContent=s.t;
+                c.children[1].textContent=s.p+"…";
+                c.onclick=()=>op(s);
+                $("o").append(c)
+            });
+            shown+=30;
+            $("m").style.display=shown<F.length?"":"none"
+        }
+        
+        $("q").oninput=filt;
+        $("m").onclick=more;
+        
+        async function op(s){
+            cur=s;
+            const t=await(await fetch("data/s/"+s.id+".txt")).text();
+            P=[];
+            for(let i=0;i<t.length;){
+                let e=Math.min(i+PS,t.length);
+                if(e<t.length){
+                    const b=Math.max(t.lastIndexOf("।",e),t.lastIndexOf("\n",e));
+                    if(b>i+PS/2)e=b+1
+                }
+                P.push(t.slice(i,e).trim());
+                i=e
+            }
+            pi=+localStorage["p"+s.id]||0;
+            $("l").style.display="none";
+            $("r").style.display="block";
+            $("rt").textContent=s.t;
+            show()
+        }
+        
+        function show(){
+            tok++;
+            speechSynthesis.cancel();
+            $("t").textContent=P[pi];
+            $("t").style.fontSize=fs+"px";
+            $("pg").textContent="पृष्ठ "+(pi+1)+" / "+P.length;
+            localStorage["p"+cur.id]=pi;
+            scrollTo(0,0)
+        }
+        
+        function go(d){
+            pi=Math.max(0,Math.min(P.length-1,pi+d));
+            show()
+        }
+        
+        function sz(d){
+            fs+=d;
+            localStorage.fs=fs;
+            $("t").style.fontSize=fs+"px"
+        }
+        
+        function back(){
+            tok++;
+            speechSynthesis.cancel();
+            $("r").style.display="none";
+            $("l").style.display="block"
+        }
+        
+        function say(){
+            speechSynthesis.cancel();
+            const my=++tok,u=new SpeechSynthesisUtterance(P[pi]);
+            u.lang="hi-IN";
+            u.onend=()=>{
+                if(my===tok&&pi<P.length-1){pi++;show();say()}
+            };
+            speechSynthesis.speak(u)
+        }
+    </script>
+</body>
+
