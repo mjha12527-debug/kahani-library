@@ -13,16 +13,9 @@ PART = 18000      # एक MP3 भाग में करीब इतने अ
 
 def clean(t):
     t = re.sub(r"https?://\S+", " ", t)
-    t = re.sub(r"[\U0001F000-\U0001FFFF\u2600-\u27BF\uFE00-\uFE0F\u200D]", " ", t)
-    t = re.sub("[\"'“”‘’«»„‟‹›`´]", "", t)
-    t = re.sub(r"(\.{2,}|…)", ", ", t)
-    t = re.sub(r"[ \t]*[—–―‒−]+[ \t]*", ", ", t)
-    t = re.sub(r"-+", " ", t)
-    t = re.sub(r"[()\[\]{}<>]", ", ", t)
     t = t.replace("॥", "।")
-    t = re.sub(r"[#*_~|\\/^=+@]", " ", t)
-    t = re.sub(r"[;:]", ",", t)
-    t = re.sub(r",([ \t]*,)+", ",", t)
+    t = re.sub(r"[^\w\s।.!?\u200c\u200d\u0900-\u097F]", " ", t)
+    t = t.replace("_", " ")
     return t
 
 def split(t):

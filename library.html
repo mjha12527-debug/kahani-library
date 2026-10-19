@@ -907,15 +907,8 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
   function cl(t){
     return String(t)
       .replace(/https?:\/\/\S+/g," ")
-      .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu," ")
-      .replace(/["'“”‘’«»„‟‹›`´]/g,"")
-      .replace(/(\.{2,}|…)/g," ")
-      .replace(/\s*[—–―‒−]+\s*/g," ")
-      .replace(/-+/g," ")
-      .replace(/[()\[\]{}<>]/g," ")
       .replace(/॥/g,"।")
-      .replace(/[#*_~|\\\/^=+@]/g," ")
-      .replace(/[;:,]/g," ")
+      .replace(/[^\p{L}\p{M}\p{N}\u200c\u200d।.!?\s]/gu," ")
       .replace(/\s+/g," ").trim();
   }
   var orig=speechSynthesis.speak.bind(speechSynthesis);
