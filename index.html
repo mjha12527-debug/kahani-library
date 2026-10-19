@@ -1,93 +1,147 @@
-<!<!doctype html>
+<!doctype html>
 <html lang="hi">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>स्वागत है - कहानी पुस्तकालय</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="logo.png">
-    <style>
-        *{box-sizing:border-box}
-        html,body{max-width:100%;overflow-x:hidden}
-        body{
-            margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-            background:radial-gradient(circle at 20% 10%,#fff7e6,#f5f0e8 60%,#ecdcc4);
-            font-family:sans-serif;color:#222;padding:20px;position:relative;
-        }
-        .gate{
-            position:relative;z-index:2;background:#fff;padding:26px 20px;border-radius:24px;
-            box-shadow:0 12px 28px rgba(0,0,0,.14);max-width:420px;width:100%;text-align:center;
-            animation:rise .7s both;
-        }
-        @keyframes rise{from{transform:translateY(30px);opacity:0}}
-        .logo-img{
-            width:170px;height:170px;object-fit:cover;border-radius:50%;
-            border:4px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.3);
-            margin-bottom:14px;animation:bob 3s ease-in-out infinite;
-        }
-        @keyframes bob{50%{transform:translateY(-8px)}}
-        .hello{color:#ef6c00;font-weight:bold;font-size:15px;margin:0 0 4px}
-        h1{color:#7a3b12;margin:0 0 8px;font-size:26px}
-        p{color:#555;margin:0 0 16px;font-size:16px;line-height:1.5}
-        .count{
-            display:inline-block;background:#fff3e0;color:#7a3b12;font-weight:bold;
-            padding:6px 14px;border-radius:20px;margin-bottom:18px;font-size:14px;
-        }
-        .btn{
-            display:block;padding:15px 20px;font-size:18px;background:#7a3b12;color:#fff;
-            text-decoration:none;border-radius:14px;font-weight:bold;
-            animation:glow 2s infinite;
-        }
-        .btn:active{transform:scale(.96)}
-        @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(122,59,18,.5)}50%{box-shadow:0 0 0 12px rgba(122,59,18,0)}}
-        .priv{margin-top:16px;font-size:14px}
-        .priv a{color:#7a3b12;text-decoration:none}
-        /* तैरते इमोजी */
-        .fl{position:fixed;bottom:-40px;font-size:26px;opacity:.7;z-index:1;pointer-events:none;animation:up linear infinite}
-        @keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>स्वागत है - कहानी पुस्तकालय</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#7a3b12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="कहानी पुस्तकालय">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="रोचक, प्रेरणादायक और मनोरंजक हिंदी कहानियाँ">
+
+<style>
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{
+  margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 20% 10%,#fff7e6,#f5f0e8 60%,#ecdcc4);
+  font-family:sans-serif;color:#222;padding:20px;position:relative;
+}
+.gate{
+  position:relative;z-index:2;background:#fff;padding:26px 20px;border-radius:24px;
+  box-shadow:0 12px 28px rgba(0,0,0,.14);max-width:420px;width:100%;text-align:center;
+  animation:rise .7s both;
+}
+@keyframes rise{from{transform:translateY(30px);opacity:0}}
+.logo-img{
+  width:170px;height:170px;object-fit:cover;border-radius:50%;
+  border:4px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.3);
+  margin-bottom:14px;animation:bob 3s ease-in-out infinite;
+}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.hello{color:#ef6c00;font-weight:bold;font-size:15px;margin:0 0 4px}
+h1{color:#7a3b12;margin:0 0 8px;font-size:26px}
+p{color:#555;margin:0 0 16px;font-size:16px;line-height:1.5}
+.count{
+  display:inline-block;background:#fff3e0;color:#7a3b12;font-weight:bold;
+  padding:6px 14px;border-radius:20px;margin-bottom:18px;font-size:14px;
+}
+.btn{
+  display:block;width:100%;padding:15px 20px;font-size:18px;background:#7a3b12;color:#fff;
+  text-decoration:none;border-radius:14px;font-weight:bold;border:0;cursor:pointer;
+  animation:glow 2s infinite;font-family:inherit;
+}
+.btn:active{transform:scale(.96)}
+.btn.inst{background:#2e7d32;margin-top:12px;animation:none;display:none}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(122,59,18,.5)}50%{box-shadow:0 0 0 12px rgba(122,59,18,0)}}
+.hint{display:none;margin-top:12px;background:#e3f2fd;color:#0d47a1;padding:10px;border-radius:12px;font-size:14px;line-height:1.5}
+.priv{margin-top:16px;font-size:14px}
+.priv a{color:#7a3b12;text-decoration:none}
+#off{display:none;position:fixed;top:0;left:0;right:0;background:#b3261e;color:#fff;text-align:center;padding:8px;font-size:14px;z-index:10}
+.fl{position:fixed;bottom:-40px;font-size:26px;opacity:.7;z-index:1;pointer-events:none;animation:up linear infinite}
+@keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+</style>
 </head>
 <body>
-    <div class="gate">
-        <img src="logo.png" class="logo-img" alt="कहानी पुस्तकालय लोगो">
-        <p class="hello" id="hello"></p>
-        <h1>📚 कहानी पुस्तकालय</h1>
-        <p>यहाँ आपको मिलेंगी रोचक, प्रेरणादायक और मनोरंजक कहानियाँ।</p>
-        <div class="count" id="cnt" style="display:none"></div>
-        <a href="library.html" class="btn">पुस्तकालय में प्रवेश करें ➔</a>
-        <p class="priv">
-            <a href="privacy.html">🔒 गोपनीयता नीति (Privacy Policy)</a>
-        </p>
-    </div>
 
-    <script>
-        // दिन के हिसाब से अभिवादन
-        var h = new Date().getHours();
-        document.getElementById("hello").textContent =
-            h < 12 ? "सुप्रभात ☀️" : h < 17 ? "नमस्कार 🙏" : h < 21 ? "शुभ संध्या 🌆" : "शुभ रात्रि 🌙";
+<div id="off">📴 आप ऑफ़लाइन हैं — पढ़ी हुई कहानियाँ अब भी खुलेंगी</div>
 
-        // कहानियों की गिनती
-        fetch("data/index.json").then(function(r){return r.json()}).then(function(d){
-            var c = document.getElementById("cnt");
-            c.textContent = "📖 " + d.length + " कहानियाँ आपका इंतज़ार कर रही हैं";
-            c.style.display = "inline-block";
-        }).catch(function(){});
+<div class="gate">
+  <img src="logo.png" class="logo-img" alt="कहानी पुस्तकालय लोगो" onerror="this.style.visibility='hidden'">
+  <p class="hello" id="hello"></p>
+  <h1>📚 कहानी पुस्तकालय</h1>
+  <p>यहाँ आपको मिलेंगी रोचक, प्रेरणादायक और मनोरंजक कहानियाँ।</p>
+  <div class="count" id="cnt" style="display:none"></div>
 
-        // तैरते इमोजी
-        var E = ["📖","✒️","📚","✨","🕮","🖋️","🌟"];
-        for (var i = 0; i < 12; i++) {
-            var s = document.createElement("span");
-            s.className = "fl";
-            s.textContent = E[i % E.length];
-            s.style.left = (Math.random() * 94) + "vw";
-            s.style.animationDuration = (9 + Math.random() * 9) + "s";
-            s.style.animationDelay = (Math.random() * 8) + "s";
-            document.body.appendChild(s);
-        }
+  <a href="library.html" class="btn">पुस्तकालय में प्रवेश करें ➔</a>
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+  <button id="inst" class="btn inst">📲 ऐप इंस्टॉल करें</button>
+  <div id="ios" class="hint">
+    📱 iPhone में: नीचे <b>Share (⬆️)</b> दबाइए → <b>"Add to Home Screen"</b> चुनिए।
+  </div>
+  <div id="how" class="hint">
+    📲 बटन न दिखे तो Chrome में ऊपर <b>⋮</b> दबाइए → <b>"Add to Home screen"</b> या <b>"Install app"</b> चुनिए।
+  </div>
+
+  <p class="priv"><a href="privacy.html">🔒 गोपनीयता नीति (Privacy Policy)</a></p>
+</div>
+
+<script>
+var h = new Date().getHours();
+document.getElementById("hello").textContent =
+  h < 12 ? "सुप्रभात ☀️" : h < 17 ? "नमस्कार 🙏" : h < 21 ? "शुभ संध्या 🌆" : "शुभ रात्रि 🌙";
+
+fetch("data/index.json").then(function(r){return r.json()}).then(function(d){
+  var c = document.getElementById("cnt");
+  c.textContent = "📖 " + d.length + " कहानियाँ आपका इंतज़ार कर रही हैं";
+  c.style.display = "inline-block";
+}).catch(function(){});
+
+function net(){document.getElementById("off").style.display = navigator.onLine ? "none" : "block"}
+window.addEventListener("online", net);
+window.addEventListener("offline", net);
+net();
+
+var dp = null;
+var btn = document.getElementById("inst");
+var standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+if (!standalone) {
+  if (ios) {
+    document.getElementById("ios").style.display = "block";
+  } else {
+    setTimeout(function(){
+      if (!dp) document.getElementById("how").style.display = "block";
+    }, 3000);
+  }
+}
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  dp = e;
+  btn.style.display = "block";
+  document.getElementById("how").style.display = "none";
+});
+btn.addEventListener("click", function(){
+  if (!dp) return;
+  dp.prompt();
+  dp.userChoice.then(function(){ dp = null; btn.style.display = "none"; });
+});
+window.addEventListener("appinstalled", function(){
+  btn.style.display = "none";
+  document.getElementById("how").style.display = "none";
+});
+
+var E = ["📖","✒️","📚","✨","🕮","🖋️","🌟"];
+for (var i = 0; i < 12; i++) {
+  var s = document.createElement("span");
+  s.className = "fl";
+  s.textContent = E[i % E.length];
+  s.style.left = (Math.random() * 94) + "vw";
+  s.style.animationDuration = (9 + Math.random() * 9) + "s";
+  s.style.animationDelay = (Math.random() * 8) + "s";
+  document.body.appendChild(s);
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
 </body>
 </html>
