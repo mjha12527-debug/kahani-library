@@ -714,14 +714,39 @@ function pickVoice(){
   voiceHi=v.find(x=>/google|neural|natural|online/i.test(x.name))||v[0]||null;
 }
 speechSynthesis.onvoiceschanged=pickVoice;pickVoice();
+function cleanTTS(t){
+  return t
+    .replace(/https?:\/\/\S+/g," ")
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu," ")
+    .replace(/["'“”‘’«»„‟‹›`´]/g,"")
+    .replace(/(\.{2,}|…)/g,", ")
+    .replace(/\s*[—–―‒−]+\s*/g,", ")
+    .replace(/-+/g," ")
+    .replace(/[()\[\]{}<>]/g,", ")
+    .replace(/॥/g,"।")
+    .replace(/[#*_~|\\\/^=+@]/g," ")
+    .replace(/[;:]/g,",")
+    .replace(/([,\s]*,[,\s]*)+/g,", ")
+    .replace(/[ \t]+/g," ");
+}
 function sp(t){
-  const o=[];
-  t.split(/(?<=[।!?.\n])/).forEach(s=>{
-    s=s.trim();
-    while(s.length>200){let k=s.lastIndexOf(" ",200);if(k<50)k=200;o.push(s.slice(0,k));s=s.slice(k).trim()}
-    if(s)o.push(s);
-  });
-  return o;
+  const pieces=cleanTTS(t).split(/(?<=[,।!?\n])|(?<=\.)(?=\s)/);
+  const out=[];let buf="";
+  const flush=()=>{const b=buf.trim();if(b)out.push(b);buf=""};
+  for(let p of pieces){
+    const end=/[।!?\n.]\s*$/.test(p);
+    p=p.replace(/[,\n]+/g," ").replace(/।/g,".").replace(/\s+/g," ").trim();
+    if(!p)continue;
+    if(buf&&buf.length+p.length>200)flush();
+    buf+=(buf?" ":"")+p;
+    while(buf.length>200){
+      let k=buf.lastIndexOf(" ",200);if(k<50)k=200;
+      out.push(buf.slice(0,k).trim());buf=buf.slice(k).trim();
+    }
+    if(end||buf.length>=40)flush();
+  }
+  flush();
+  return out;
 }
 function say(){
   if(!au.paused)au.pause();
