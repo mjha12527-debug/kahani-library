@@ -900,5 +900,36 @@ document.addEventListener("keydown",e=>{
 resetForm();drawBtns();applyTheme();load().then(openShared);
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
+
+<script>
+/* TTS सफ़ाई: बोलने से ठीक पहले चिह्न हटाओ */
+(function(){
+  function cl(t){
+    return String(t)
+      .replace(/https?:\/\/\S+/g," ")
+      .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu," ")
+      .replace(/["'“”‘’«»„‟‹›`´]/g,"")
+      .replace(/(\.{2,}|…)/g," ")
+      .replace(/\s*[—–―‒−]+\s*/g," ")
+      .replace(/-+/g," ")
+      .replace(/[()\[\]{}<>]/g," ")
+      .replace(/॥/g,"।")
+      .replace(/[#*_~|\\\/^=+@]/g," ")
+      .replace(/[;:,]/g," ")
+      .replace(/\s+/g," ").trim();
+  }
+  var orig=speechSynthesis.speak.bind(speechSynthesis);
+  speechSynthesis.speak=function(u){
+    try{
+      u.text=cl(u.text);
+      if(!/[\p{L}\p{N}]/u.test(u.text)){
+        if(u.onend)setTimeout(function(){u.onend(new Event("end"))},0);
+        return;
+      }
+    }catch(e){}
+    orig(u);
+  };
+})();
+</script>
 </body>
 </html>
