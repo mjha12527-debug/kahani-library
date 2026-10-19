@@ -393,5 +393,9 @@ $("bk").addEventListener("touchend",e=>{
 
 clearForm();drawBtns();load();
 </script>
-</body>
+</body><script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
 </html>
