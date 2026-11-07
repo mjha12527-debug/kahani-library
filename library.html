@@ -250,10 +250,10 @@ body.hasap #up{bottom:180px}
 <script>
 /* ================= सेटिंग (यहीं से बदलें) ================= */
 const OWNER_PASS = "ChangeMe@123";     // ← यहाँ अपना पासवर्ड लिखें (स्पेस न रखें)
-const MAX_LINES  = 6;                  
-const MAX_CHARS  = 350;                
-const MAX_COPIES = 3;                  
-const WINDOW_MS  = 10*60*1000;         
+const MAX_LINES  = 6;
+const MAX_CHARS  = 350;
+const MAX_COPIES = 3;
+const WINDOW_MS  = 10*60*1000;
 const SITE = location.origin + location.pathname.replace(/[^\/]*$/, "");
 
 // आपका Cloudflare Worker URL
@@ -409,10 +409,12 @@ function wakeOff(){try{if(wl)wl.release()}catch(e){}wl=null}
 
 /* ================= कहानियाँ लोड + Base64 डिकोड ================= */
 function dec(b){
-  const s=b.trim();
-  if(!/^[A-Za-z0-9+\/=\s]+$/.test(s))return b;
-  try{return new TextDecoder().decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)))}
-  catch(e){return b}
+  const s=b.replace(/\s+/g,"");
+  if(s.length<8||s.length%4!==0||!/^[A-Za-z0-9+\/=]+$/.test(s))return b;
+  try{
+    const txt=new TextDecoder("utf-8",{fatal:true}).decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)));
+    return /[\u0900-\u097F]/.test(txt)?txt:b;
+  }catch(e){return b}
 }
 async function getText(s){
   if(s.text!=null)return s.text;
@@ -725,6 +727,7 @@ document.addEventListener("keydown",e=>{
 let edgeAudio = new Audio();
 let currentTTSBlobUrl = null;
 let isGeneratingTTS = false;
+const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=";
 
 function cleanTTSEdge(t) {
   return t.replace(/https?:\/\/\S+/g, " ")
@@ -733,15 +736,22 @@ function cleanTTSEdge(t) {
           .trim();
 }
 
+const xmlEsc=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");
+
 async function say() {
   if (isGeneratingTTS) return;
-  
+
   if (!navigator.onLine) {
     toast("⚠️ इंटरनेट नहीं है, मशीनी आवाज़ चालू...");
     return fallbackSay();
   }
 
   stopSay();
+
+  // user के tap के तुरंत बाद ऑडियो unlock करें, ताकि बाद में play() न रुके
+  edgeAudio.src = SILENT_WAV;
+  edgeAudio.play().catch(() => {});
+
   if (pi === 0) { pi = 1; show(); }
 
   const text = cleanTTSEdge(P[pi]);
@@ -755,9 +765,8 @@ async function say() {
   wakeOn();
 
   try {
-    // प्रॉक्सी के जरिए ऑडियो लाएं
-    const audioBlob = await getAudioFromProxy(text, localStorage.edgeVoice || 'hi-IN-SwaraNeural');
-    
+    const audioBlob = await getAudioFromProxy(text, localStorage.edgeVoice || "hi-IN-SwaraNeural");
+
     if (currentTTSBlobUrl) URL.revokeObjectURL(currentTTSBlobUrl);
     currentTTSBlobUrl = URL.createObjectURL(audioBlob);
 
@@ -785,49 +794,59 @@ async function say() {
   }
 }
 
-// Cloudflare Worker के जरिए Edge TTS से ऑडियो लाने वाला फंक्शन
 async function getAudioFromProxy(text, voice) {
   return new Promise((resolve, reject) => {
-    const wsUrl = PROXY_URL.replace('https://', 'wss://').replace(/\/$/, '') + '/?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+    const wsUrl = PROXY_URL.replace(/^https:/, "wss:").replace(/\/$/, "") + "/?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4";
     const ws = new WebSocket(wsUrl);
-    const audioChunks = [];
-    ws.binaryType = 'arraybuffer';
+    ws.binaryType = "arraybuffer";
+    const chunks = [];
+    let done = false;
+
+    const finish = (fn, v) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try { ws.close(); } catch (e) {}
+      fn(v);
+    };
+    const timer = setTimeout(() => finish(reject, new Error("timeout")), 20000);
 
     ws.onopen = () => {
       const configMsg = `X-Timestamp:${Date.now()}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}`;
       ws.send(configMsg);
 
-      const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='hi-IN'><voice name='${voice}'>${text}</voice></speak>`;
-      const textMsg = `X-RequestId:${crypto.randomUUID().replace(/-/g, '')}\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${Date.now()}Z\r\nPath:ssml\r\n\r\n${ssml}`;
+      const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='hi-IN'><voice name='${voice}'>${xmlEsc(text)}</voice></speak>`;
+      const textMsg = `X-RequestId:${crypto.randomUUID().replace(/-/g, "")}\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${Date.now()}Z\r\nPath:ssml\r\n\r\n${ssml}`;
       ws.send(textMsg);
     };
 
     ws.onmessage = (event) => {
-      if (typeof event.data === 'string') {
-        if (event.data.includes('turn.end')) ws.close();
+      if (typeof event.data === "string") {
+        if (event.data.includes("Path:turn.end")) {
+          chunks.length
+            ? finish(resolve, new Blob(chunks, { type: "audio/mpeg" }))
+            : finish(reject, new Error("no audio"));
+        }
         return;
       }
-      const view = new DataView(event.data);
-      const headerLength = view.getUint16(0);
+      const dv = new DataView(event.data);
+      const headerLength = dv.getUint16(0);
       if (event.data.byteLength > headerLength + 2) {
-        audioChunks.push(event.data.slice(headerLength + 2));
+        chunks.push(event.data.slice(headerLength + 2));
       }
     };
 
-    ws.onerror = () => reject(new Error('WebSocket Error'));
+    ws.onerror = () => finish(reject, new Error("WebSocket Error"));
     ws.onclose = () => {
-      if (audioChunks.length > 0) {
-        resolve(new Blob(audioChunks, { type: 'audio/mpeg' }));
-      } else {
-        reject(new Error('No audio data'));
-      }
+      if (chunks.length) finish(resolve, new Blob(chunks, { type: "audio/mpeg" }));
+      else finish(reject, new Error("No audio data"));
     };
   });
 }
 
 function stopSay() {
   tok++;
-  speechSynthesis.cancel(); 
+  speechSynthesis.cancel();
   if (edgeAudio) {
     edgeAudio.pause();
     edgeAudio.currentTime = 0;
@@ -1008,4 +1027,4 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
 
 </body>
-      </html>
+  </html>
