@@ -6,8 +6,8 @@
 <title>मेरा कहानी पुस्तकालय</title>
 
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<!-- CSP अपडेट किया गया ताकि Edge TTS काम कर सके -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' wss://speech.platform.bing.com; img-src 'self' data:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'none'">
+<!-- CSP अपडेट किया गया ताकि आपका Cloudflare Worker काम कर सके -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' wss://super-moon-6447.mjha12527.workers.dev; img-src 'self' data:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <script>if(window.top!==window.self){window.top.location=window.self.location}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -131,7 +131,6 @@ body.hasap #up{bottom:180px}
   <button onclick="closeMenu();installApp()">📲 ऐप इंस्टॉल करें</button>
   <div class="mr">🔠 अक्षर <button onclick="sz(-2)">A−</button><button onclick="sz(2)">A+</button></div>
   <div class="mr">🔊 सुनाने की गति <button onclick="setRate(0.8)">धीमी</button><button onclick="setRate(1)">सामान्य</button><button onclick="setRate(1.3)">तेज़</button></div>
-  <!-- नया बटन: आवाज़ बदलने के लिए -->
   <button onclick="closeMenu();changeVoice()">🗣️ आवाज़ बदलें (स्त्री/पुरुष)</button>
   <div class="mr">↕️ क्रम <button onclick="setSort('new')">नई</button><button onclick="setSort('old')">पुरानी</button><button onclick="setSort('name')">नाम</button></div>
   <button onclick="closeMenu();night()">🎨 पढ़ने का रंग बदलें</button>
@@ -257,6 +256,9 @@ const MAX_COPIES = 3;
 const WINDOW_MS  = 10*60*1000;         
 const SITE = location.origin + location.pathname.replace(/[^\/]*$/, "");
 
+// आपका Cloudflare Worker URL
+const PROXY_URL = 'https://super-moon-6447.mjha12527.workers.dev';
+
 const $=i=>document.getElementById(i);
 let A=[],F=[],AUD={},shown=0,P=[],pi=0,cur=null,curList=[],tok=0,C="",mode="",favOnly=false,editId=null,editBase=null;
 let curV="home",SORT=localStorage.sort||"new",wl=null;
@@ -304,7 +306,6 @@ function closeMenu(){$("mnu").classList.remove("on");$("mnuBg").classList.remove
 function setRate(r){localStorage.rate=r;closeMenu();toast("🔊 गति बदल गई")}
 function setSort(s){SORT=s;localStorage.sort=s;closeMenu();sortA();filt();toast("↕️ क्रम बदल गया")}
 
-// नया फंक्शन: Edge TTS की आवाज़ बदलने के लिए
 function changeVoice(){
   const v = localStorage.edgeVoice || 'hi-IN-SwaraNeural';
   const nv = v === 'hi-IN-SwaraNeural' ? 'hi-IN-MadhurNeural' : 'hi-IN-SwaraNeural';
@@ -721,13 +722,11 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ================= 🔊 नैचुरल TTS (Microsoft Edge) ================= */
-// Edge TTS के लिए ऑडियो ऑब्जेक्ट
 let edgeAudio = new Audio();
 let currentTTSBlobUrl = null;
 let isGeneratingTTS = false;
 
 function cleanTTSEdge(t) {
-  // Edge TTS कोमा और फुलस्टॉप से खुद ही ठहराव लेता है, इसलिए सिर्फ इमोजी और लिंक हटाएं
   return t.replace(/https?:\/\/\S+/g, " ")
           .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, " ")
           .replace(/[#*_~|\\\/^=+@]/g, " ")
@@ -737,7 +736,6 @@ function cleanTTSEdge(t) {
 async function say() {
   if (isGeneratingTTS) return;
   
-  // अगर इंटरनेट नहीं है तो पुरानी आवाज़ पर वापस जाएं
   if (!navigator.onLine) {
     toast("⚠️ इंटरनेट नहीं है, मशीनी आवाज़ चालू...");
     return fallbackSay();
@@ -749,7 +747,6 @@ async function say() {
   const text = cleanTTSEdge(P[pi]);
   if (!text) return;
 
-  // लोडिंग स्टेटस दिखाएं
   const btn = $("btnSay");
   const oldText = btn.innerHTML;
   btn.innerHTML = "⏳ लोड हो रहा है...";
@@ -758,30 +755,18 @@ async function say() {
   wakeOn();
 
   try {
-    // Edge TTS लाइब्रेरी डायनामिक रूप से इम्पोर्ट करें
-    const module = await import('https://cdn.jsdelivr.net/npm/edge-tts-universal/+esm');
-    const UniversalEdgeTTS = module.UniversalEdgeTTS;
-
-    // आवाज़ चुनें (डिफ़ॉल्ट: Swara - महिला)
-    const voice = localStorage.edgeVoice || 'hi-IN-SwaraNeural';
+    // प्रॉक्सी के जरिए ऑडियो लाएं
+    const audioBlob = await getAudioFromProxy(text, localStorage.edgeVoice || 'hi-IN-SwaraNeural');
     
-    // ऑडियो जनरेट करें
-    const tts = new UniversalEdgeTTS(text, voice);
-    const blob = await tts.synthesize();
-
-    // पुराना URL साफ़ करें
     if (currentTTSBlobUrl) URL.revokeObjectURL(currentTTSBlobUrl);
-    currentTTSBlobUrl = URL.createObjectURL(blob);
+    currentTTSBlobUrl = URL.createObjectURL(audioBlob);
 
     edgeAudio.src = currentTTSBlobUrl;
     edgeAudio.playbackRate = +localStorage.rate || 1;
 
-    // जब एक पेज खत्म हो, तो अगला पेज अपने आप चलाएं
     edgeAudio.onended = () => {
       if (pi < P.length - 1) {
-        pi++;
-        show(true);
-        say();
+        pi++; show(true); say();
       } else {
         wakeOff();
       }
@@ -792,7 +777,7 @@ async function say() {
   } catch (err) {
     console.error("Edge TTS Error:", err);
     toast("⚠️ आवाज़ लोड नहीं हो पाई, मशीनी आवाज़ चालू...");
-    fallbackSay(); // अगर नेटवर्क फेल हो तो फॉलबैक
+    fallbackSay();
   } finally {
     btn.innerHTML = oldText;
     btn.disabled = false;
@@ -800,11 +785,49 @@ async function say() {
   }
 }
 
+// Cloudflare Worker के जरिए Edge TTS से ऑडियो लाने वाला फंक्शन
+async function getAudioFromProxy(text, voice) {
+  return new Promise((resolve, reject) => {
+    const wsUrl = PROXY_URL.replace('https://', 'wss://').replace(/\/$/, '') + '/?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+    const ws = new WebSocket(wsUrl);
+    const audioChunks = [];
+    ws.binaryType = 'arraybuffer';
+
+    ws.onopen = () => {
+      const configMsg = `X-Timestamp:${Date.now()}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}`;
+      ws.send(configMsg);
+
+      const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='hi-IN'><voice name='${voice}'>${text}</voice></speak>`;
+      const textMsg = `X-RequestId:${crypto.randomUUID().replace(/-/g, '')}\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${Date.now()}Z\r\nPath:ssml\r\n\r\n${ssml}`;
+      ws.send(textMsg);
+    };
+
+    ws.onmessage = (event) => {
+      if (typeof event.data === 'string') {
+        if (event.data.includes('turn.end')) ws.close();
+        return;
+      }
+      const view = new DataView(event.data);
+      const headerLength = view.getUint16(0);
+      if (event.data.byteLength > headerLength + 2) {
+        audioChunks.push(event.data.slice(headerLength + 2));
+      }
+    };
+
+    ws.onerror = () => reject(new Error('WebSocket Error'));
+    ws.onclose = () => {
+      if (audioChunks.length > 0) {
+        resolve(new Blob(audioChunks, { type: 'audio/mpeg' }));
+      } else {
+        reject(new Error('No audio data'));
+      }
+    };
+  });
+}
+
 function stopSay() {
-  tok++; // पुरानी बिल्ट-इन आवाज़ रोकें
+  tok++;
   speechSynthesis.cancel(); 
-  
-  // नई Edge आवाज़ रोकें
   if (edgeAudio) {
     edgeAudio.pause();
     edgeAudio.currentTime = 0;
@@ -812,7 +835,7 @@ function stopSay() {
   wakeOff();
 }
 
-/* ================= 🔊 बैकअप: पुरानी मशीनी आवाज़ (अगर इंटरनेट न हो) ================= */
+/* ================= 🔊 बैकअप: पुरानी मशीनी आवाज़ ================= */
 let voiceHi=null;
 function pickVoice(){
   const v=speechSynthesis.getVoices().filter(x=>/^hi/i.test(x.lang));
@@ -985,4 +1008,4 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
 
 </body>
-</html>
+      </html>
